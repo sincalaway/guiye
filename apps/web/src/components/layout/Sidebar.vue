@@ -37,7 +37,7 @@ const logoUrl = `${import.meta.env.BASE_URL}logo.png`
 <template>
   <!-- 桌面：左侧竖栏 -->
   <aside v-if="variant === 'desktop'" class="glass-soft fixed top-1/2 left-3 z-30 hidden max-h-[86vh] w-[68px] -translate-y-1/2 flex-col items-center rounded-2xl py-3 text-white md:flex" @contextmenu.stop.prevent>
-    <button class="mb-2 h-11 w-11 rounded-full bg-[#faf8f0]/90 p-0.5 shadow-sm transition hover:scale-105 hover:bg-[#faf8f0]" title="归页 · 关于" @click="ui.openSettings('about')">
+    <button class="mb-2 h-11 w-11 overflow-hidden rounded-xl shadow-sm transition hover:scale-105" title="归页 · 关于" @click="ui.openSettings('about')">
       <img :src="logoUrl" alt="归页" class="h-full w-full" draggable="false" />
     </button>
     <button
