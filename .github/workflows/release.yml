@@ -1,0 +1,30 @@
+name: Release extension
+
+# 推送 v* 标签（如 v0.1.0）时：构建并测试，打包扩展 zip，发布到 GitHub Releases
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm build:ext
+      - run: pnpm zip:ext
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: apps/extension/guiye-extension-*.zip
+          generate_release_notes: true
