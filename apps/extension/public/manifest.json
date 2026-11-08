@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "归页 - 新标签页",
+  "short_name": "归页",
+  "version": "0.1.0",
+  "description": "归页：可自部署的个人起始页，书签管理、聚合搜索、组件卡片、WebApp 内嵌与多端同步。",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "action": {
+    "default_title": "打开归页"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage",
+    "bookmarks",
+    "favicon",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

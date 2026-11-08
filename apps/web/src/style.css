@@ -1,0 +1,126 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', 'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --color-brand-50: #eef2ff;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+}
+
+:root {
+  --icon-size: 60px;
+  --icon-radius: 26%;
+  --grid-gap: 28px;
+  --cell-w: calc(var(--icon-size) + 24px);
+  --cell-h: calc(var(--icon-size) + 26px);
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 毛玻璃面板 */
+@utility glass {
+  background: rgb(255 255 255 / 0.72);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgb(255 255 255 / 0.5);
+  .dark & {
+    background: rgb(24 24 27 / 0.72);
+    border-color: rgb(255 255 255 / 0.08);
+  }
+}
+
+/* 壁纸上方的浅色玻璃（侧栏/搜索框） */
+@utility glass-soft {
+  background: rgb(255 255 255 / 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgb(255 255 255 / 0.18);
+}
+
+@utility text-shadow {
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.45);
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(127 127 127 / 0.35) transparent;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* 通用表单控件 */
+@utility gy-input {
+  @apply w-full rounded-lg border border-zinc-200 bg-white/80 px-3 py-2 text-sm text-zinc-800 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-zinc-100;
+}
+@utility gy-btn {
+  @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition select-none disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility gy-btn-primary {
+  @apply gy-btn bg-brand-500 text-white hover:bg-brand-600;
+}
+@utility gy-btn-ghost {
+  @apply gy-btn bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700;
+}
+@utility gy-btn-danger {
+  @apply gy-btn bg-red-500 text-white hover:bg-red-600;
+}
+@utility gy-label {
+  @apply mb-1.5 block text-xs font-medium text-zinc-500 dark:text-zinc-400;
+}
+
+/* 批量编辑时图标抖动 */
+@keyframes gy-jiggle {
+  0%,
+  100% {
+    transform: rotate(-1.2deg);
+  }
+  50% {
+    transform: rotate(1.2deg);
+  }
+}
+.gy-jiggle {
+  animation: gy-jiggle 0.28s ease-in-out infinite;
+}
+
+/* 拖拽占位 */
+.gy-ghost {
+  opacity: 0.35;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.pop-enter-active,
+.pop-leave-active {
+  transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.pop-enter-from,
+.pop-leave-to {
+  opacity: 0;
+  transform: scale(0.96) translateY(6px);
+}
