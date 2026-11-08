@@ -1,6 +1,12 @@
-# 归页
+<p align="center">
+  <img src="docs/assets/logo.png" alt="归页" width="160" />
+</p>
 
-> 可自部署的「个人起始页 + 书签管理 + 组件式主页」。网页版、Chrome/Edge 新标签页扩展、可选多端同步，干净无广告。
+<h1 align="center">归页</h1>
+
+<p align="center">可自部署的「个人起始页 + 书签管理 + 组件式主页」。<br/>网页版、Chrome/Edge 新标签页扩展、可选多端同步，干净无广告。</p>
+
+<p align="center"><sub>Logo：水墨圆月与归燕，取「倦鸟归巢、每开新页皆是归处」之意。</sub></p>
 
 技术栈：Vue 3 · Vite 7 · TypeScript · Pinia · Tailwind CSS 4 · VueUse · Lucide / Iconify · vue-draggable-plus · idb-keyval · Supabase（可选）
 

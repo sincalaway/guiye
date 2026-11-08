@@ -11,12 +11,13 @@ const SHORTCUTS = [
   ['Ctrl/⌘ + 点击图标', '强制在新标签页打开'],
   ['Esc', '关闭弹窗 / 退出批量编辑'],
 ]
+const logoUrl = `${import.meta.env.BASE_URL}logo.png`
 </script>
 
 <template>
   <section class="space-y-5 text-sm">
     <div class="flex items-center gap-3">
-      <img src="/logo.svg" alt="" class="h-12 w-12" />
+      <img :src="logoUrl" alt="归页" class="h-16 w-16 rounded-2xl bg-[#faf8f0] p-1 shadow-sm" />
       <div>
         <div class="text-lg font-semibold">归页</div>
         <div class="text-xs text-zinc-500">v0.1.0 · {{ IS_EXTENSION ? '浏览器扩展版' : 'Web 版' }} · MIT 开源，干净无广告</div>
