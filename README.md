@@ -6,7 +6,7 @@
 
 <p align="center">可自部署的「个人起始页 + 书签管理 + 组件式主页」。<br/>网页版、Chrome/Edge 新标签页扩展、可选多端同步，干净无广告。</p>
 
-<p align="center"><sub>Logo：水墨书卷化作远山，山间一轮朱日，取「开卷即归处」之意。</sub></p>
+<p align="center"><sub>Logo：两笔墨痕，上为远山、下为书页，一点朱日，取「开卷即归处」之意。</sub></p>
 
 技术栈：Vue 3 · Vite 7 · TypeScript · Pinia · Tailwind CSS 4 · VueUse · Lucide / Iconify · vue-draggable-plus · idb-keyval · Supabase（可选）
 
