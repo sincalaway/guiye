@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="docs/assets/logo.png" alt="归页" width="160" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/logo-light.png" />
+    <img src="docs/assets/logo.png" alt="归页" width="160" />
+  </picture>
 </p>
 
 <h1 align="center">归页</h1>

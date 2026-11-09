@@ -5,7 +5,7 @@ import type { Category } from '@guiye/shared'
 import { useAppStore } from '@/stores/app'
 import { useUiStore } from '@/stores/ui'
 import { useSyncStore } from '@/stores/sync'
-import { categoryIcon } from '@/utils/categoryIcons'
+import { categoryIcon, categoryColor } from '@/utils/categoryIcons'
 
 defineProps<{ variant: 'desktop' | 'mobile' }>()
 const app = useAppStore()
@@ -31,13 +31,13 @@ function onCategoryMenu(e: MouseEvent, c: Category) {
 function addCategory() {
   Object.assign(ui.categoryEditor, { open: true, id: null })
 }
-const logoUrl = `${import.meta.env.BASE_URL}logo.png`
+const logoUrl = `${import.meta.env.BASE_URL}logo-light.png`
 </script>
 
 <template>
   <!-- 桌面：左侧竖栏 -->
   <aside v-if="variant === 'desktop'" class="glass-soft fixed top-1/2 left-3 z-30 hidden max-h-[86vh] w-[68px] -translate-y-1/2 flex-col items-center rounded-2xl py-3 text-white md:flex" @contextmenu.stop.prevent>
-    <button class="mb-2 h-11 w-11 overflow-hidden rounded-xl shadow-sm transition hover:scale-105" title="归页 · 关于" @click="ui.openSettings('about')">
+    <button class="mb-2 h-11 w-11 transition hover:scale-105" title="归页 · 关于" @click="ui.openSettings('about')">
       <img :src="logoUrl" alt="归页" class="h-full w-full" draggable="false" />
     </button>
     <button
@@ -60,7 +60,9 @@ const logoUrl = `${import.meta.env.BASE_URL}logo.png`
         @click="app.setActiveCategory(c.id)"
         @contextmenu.stop.prevent="onCategoryMenu($event, c)"
       >
-        <component :is="categoryIcon(c.icon)" :size="20" />
+        <span class="flex h-8 w-8 items-center justify-center rounded-[10px] text-white shadow-md" :style="{ background: `linear-gradient(145deg, ${categoryColor(c)}, ${categoryColor(c)}cc)` }">
+          <component :is="categoryIcon(c.icon)" :size="18" :stroke-width="2.2" />
+        </span>
         <span class="w-full truncate px-1 text-center">{{ c.name }}</span>
       </button>
     </VueDraggable>
@@ -78,7 +80,7 @@ const logoUrl = `${import.meta.env.BASE_URL}logo.png`
       @click="app.setActiveCategory(c.id)"
       @contextmenu.stop.prevent="onCategoryMenu($event, c)"
     >
-      <component :is="categoryIcon(c.icon)" :size="15" />{{ c.name }}
+      <span class="flex h-5 w-5 items-center justify-center rounded-md text-white" :style="{ background: categoryColor(c) }"><component :is="categoryIcon(c.icon)" :size="13" /></span>{{ c.name }}
     </button>
     <button class="glass-soft shrink-0 rounded-full px-2.5" title="新建分类" @click="addCategory"><Plus :size="16" /></button>
   </nav>

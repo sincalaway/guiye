@@ -69,7 +69,7 @@ function onMiddle(e: MouseEvent) {
         @click="onClick"
         @mousedown="onMiddle"
       >
-        <div class="shrink-0 overflow-hidden shadow" :style="{ width: 'calc(var(--icon-size) * 0.8)', height: 'calc(var(--icon-size) * 0.8)', borderRadius: 'var(--icon-radius)' }">
+        <div class="shrink-0" :style="{ width: 'calc(var(--icon-size) * 0.8)', height: 'calc(var(--icon-size) * 0.8)' }">
           <SiteIcon :item="item" :size="layout.iconSize * 0.8" />
         </div>
         <div class="min-w-0" :class="size.rows >= 2 ? 'mt-2' : 'flex-1'">
@@ -88,11 +88,11 @@ function onMiddle(e: MouseEvent) {
         @mousedown="onMiddle"
       >
         <div
-          class="overflow-hidden shadow-lg transition group-hover:-translate-y-0.5 group-hover:shadow-xl"
-          :style="{ width: 'var(--icon-size)', height: 'var(--icon-size)', borderRadius: 'var(--icon-radius)' }"
+          class="transition group-hover:-translate-y-0.5"
+          :style="{ width: 'var(--icon-size)', height: 'var(--icon-size)' }"
         >
           <SiteIcon v-if="item.type === 'site'" :item="item" :size="layout.iconSize" />
-          <div v-else-if="item.type === 'folder'" class="glass grid h-full w-full grid-cols-3 content-start gap-[6%] p-[12%]">
+          <div v-else-if="item.type === 'folder'" class="glass grid h-full w-full grid-cols-3 content-start gap-[6%] overflow-hidden p-[12%] shadow-lg" :style="{ borderRadius: 'var(--icon-radius)' }">
             <div v-for="c in item.children.slice(0, 9)" :key="c.id" class="aspect-square overflow-hidden rounded-[22%]">
               <SiteIcon :item="c" :size="layout.iconSize / 4" />
             </div>

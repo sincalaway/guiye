@@ -24,9 +24,16 @@ const text = computed(() => (props.item.icon.kind === 'text' && props.item.icon.
 </script>
 
 <template>
-  <div class="relative flex h-full w-full items-center justify-center overflow-hidden" :style="showText || item.icon.kind === 'iconify' ? { background: bg } : { background: '#fff' }">
+  <!-- 文字 / Iconify 图标需要底色；图片图标只显示原图，不加白底、不裁圆角 -->
+  <div
+    v-if="showText || item.icon.kind === 'iconify'"
+    class="relative flex h-full w-full items-center justify-center overflow-hidden shadow-lg"
+    :style="{ background: bg, borderRadius: 'var(--icon-radius, 22%)' }"
+  >
     <span v-if="showText" class="font-semibold text-white select-none" :style="{ fontSize: `${(size ?? 60) * (text.length > 1 ? 0.34 : 0.42)}px` }">{{ text }}</span>
     <Icon v-else-if="item.icon.kind === 'iconify'" :icon="item.icon.value" class="text-white" :style="{ fontSize: `${(size ?? 60) * 0.58}px` }" />
-    <img v-else :src="src" alt="" class="h-[72%] w-[72%] object-contain" loading="lazy" draggable="false" referrerpolicy="no-referrer" @error="failed = true" />
+  </div>
+  <div v-else class="relative flex h-full w-full items-center justify-center">
+    <img :src="src" alt="" class="h-full w-full object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]" loading="lazy" draggable="false" referrerpolicy="no-referrer" @error="failed = true" />
   </div>
 </template>

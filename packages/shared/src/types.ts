@@ -66,6 +66,8 @@ export interface Category {
   name: string
   /** lucide 图标名，见 web/src/utils/categoryIcons.ts */
   icon: string
+  /** 侧栏图标底色（十六进制），缺省按图标自动取色 */
+  color?: string
   items: GridItem[]
 }
 

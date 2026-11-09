@@ -12,15 +12,16 @@ const SHORTCUTS = [
   ['Esc', '关闭弹窗 / 退出批量编辑'],
 ]
 const logoUrl = `${import.meta.env.BASE_URL}logo.png`
+const logoLightUrl = `${import.meta.env.BASE_URL}logo-light.png`
 </script>
 
 <template>
   <section class="space-y-5 text-sm">
     <div class="flex items-center gap-3">
-      <img :src="logoUrl" alt="归页" class="h-16 w-16 rounded-2xl shadow-sm" />
+      <img :src="logoUrl" alt="归页" class="h-16 w-16 dark:hidden" /><img :src="logoLightUrl" alt="归页" class="hidden h-16 w-16 dark:block" />
       <div>
         <div class="text-lg font-semibold">归页</div>
-        <div class="text-xs text-zinc-500">v0.1.0 · {{ IS_EXTENSION ? '浏览器扩展版' : 'Web 版' }} · MIT 开源，干净无广告</div>
+        <div class="text-xs text-zinc-500">v0.1.1 · {{ IS_EXTENSION ? '浏览器扩展版' : 'Web 版' }} · MIT 开源，干净无广告</div>
       </div>
     </div>
     <p class="leading-relaxed text-zinc-600 dark:text-zinc-300">个人起始页 + 书签管理 + 组件式主页。数据本地优先，可选自建云同步。</p>
