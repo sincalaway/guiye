@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "归页 - 新标签页",
   "short_name": "归页",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "归页：可自部署的个人起始页，书签管理、聚合搜索、组件卡片、WebApp 内嵌与多端同步。",
   "icons": {
     "16": "icons/icon16.png",

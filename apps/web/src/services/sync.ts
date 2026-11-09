@@ -19,8 +19,29 @@ export interface SyncConfig {
   anonKey: string
 }
 
+/**
+ * 把用户填写的地址规范成 Supabase 项目 API 地址。
+ * 支持：完整地址、缺少 https:// 的地址、仅项目 ID（ref）、控制台地址（supabase.com/dashboard/project/<ref>）、
+ * 误带的 /rest/v1 等路径。无法识别时返回 null。
+ */
+export function normalizeSupabaseUrl(input: string): string | null {
+  let v = (input || '').trim().replace(/^['"]|['"]$/g, '')
+  if (!v) return null
+  const dash = v.match(/supabase\.com\/dashboard\/project\/([a-z0-9]{10,})/i)
+  if (dash) return `https://${dash[1].toLowerCase()}.supabase.co`
+  if (/^[a-z0-9]{15,30}$/i.test(v)) return `https://${v.toLowerCase()}.supabase.co`
+  if (!/^https?:\/\//i.test(v)) v = `https://${v}`
+  try {
+    const u = new URL(v)
+    if (!u.hostname.includes('.') && u.hostname !== 'localhost') return null
+    return u.origin
+  } catch {
+    return null
+  }
+}
+
 export function resolveSyncConfig(custom: { supabaseUrl: string; supabaseAnonKey: string }): SyncConfig | null {
-  const url = custom.supabaseUrl || import.meta.env.VITE_SUPABASE_URL || ''
+  const url = normalizeSupabaseUrl(custom.supabaseUrl || import.meta.env.VITE_SUPABASE_URL || '') || ''
   const anonKey = custom.supabaseAnonKey || import.meta.env.VITE_SUPABASE_ANON_KEY || ''
   return url && anonKey ? { url, anonKey } : null
 }

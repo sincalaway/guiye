@@ -4,6 +4,7 @@ import { Cloud, LogOut, RefreshCw, UploadCloud, DownloadCloud } from 'lucide-vue
 import { useAppStore } from '@/stores/app'
 import { useUiStore } from '@/stores/ui'
 import { useSyncStore } from '@/stores/sync'
+import { normalizeSupabaseUrl } from '@/services/sync'
 
 const app = useAppStore()
 const ui = useUiStore()
@@ -41,9 +42,22 @@ const sendOtp = () => act(async () => (await sync.sendOtp(email.value.trim()), (
 const verify = () => act(() => sync.verifyOtp(email.value.trim(), code.value.trim()), '登录成功，开始同步')
 
 function saveConfig() {
-  s.value.supabaseUrl = cfg.value.url.trim()
-  s.value.supabaseAnonKey = cfg.value.key.trim()
-  ui.toast('同步服务配置已保存')
+  const rawUrl = cfg.value.url.trim()
+  const key = cfg.value.key.trim()
+  if (!rawUrl && !key) {
+    s.value.supabaseUrl = ''
+    s.value.supabaseAnonKey = ''
+    ui.toast('已清除自定义同步服务')
+    return
+  }
+  const url = normalizeSupabaseUrl(rawUrl)
+  if (!url) return ui.toast('项目地址无效：请填写 Supabase 后台 Project Settings → API 中的 Project URL，形如 https://xxxx.supabase.co', 'error')
+  if (key.split('.').length !== 3 && !key.startsWith('sb_publishable_'))
+    return ui.toast('anon key 格式不对：请复制 Project Settings → API 中的 anon public key（以 eyJ 开头）或 publishable key', 'error')
+  cfg.value.url = url
+  s.value.supabaseUrl = url
+  s.value.supabaseAnonKey = key
+  ui.toast('同步服务配置已保存', 'success')
 }
 
 async function forcePush() {
