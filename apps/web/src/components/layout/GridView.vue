@@ -15,7 +15,8 @@ const layout = computed(() => app.settings.layout)
 
 /** 图标尺寸/间距通过 CSS 变量驱动，手机端自动收紧 */
 const vars = computed(() => {
-  const icon = mobile.value ? Math.min(layout.value.iconSize, 54) : layout.value.iconSize
+  // 手机端按比例缩小（而不是封顶），保证「图标大小」设置在手机上同样生效
+  const icon = mobile.value ? Math.round(layout.value.iconSize * 0.9) : layout.value.iconSize
   const gap = mobile.value ? Math.min(layout.value.gap, 16) : layout.value.gap
   return {
     '--icon-size': `${icon}px`,
