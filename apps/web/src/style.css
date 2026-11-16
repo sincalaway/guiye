@@ -145,3 +145,10 @@ body,
   opacity: 0;
   transform: translateY(-48px);
 }
+
+/* 左侧通栏：深色半透明 + 毛玻璃，色调随壁纸 */
+@utility gy-sidebar {
+  background: rgb(0 0 0 / 0.38);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}

@@ -133,7 +133,7 @@ onKeyStroke((e) => {
       />
     </div>
 
-    <main ref="mainEl" class="scrollbar-thin h-full overflow-y-auto" :class="showSidebar ? 'md:pl-[84px]' : ''">
+    <main ref="mainEl" class="scrollbar-thin h-full overflow-y-auto" :class="showSidebar ? 'md:pl-[60px]' : ''">
       <div class="flex flex-col transition-all duration-500" :class="minimal ? 'min-h-full justify-center pb-[18vh]' : 'pt-[6vh] md:pt-[6.5vh]'">
         <div class="mb-6 px-4 md:mb-8"><ClockHeader /></div>
         <div class="mb-7 px-4 md:mb-12"><SearchBox /></div>

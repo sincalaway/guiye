@@ -141,6 +141,8 @@ export interface LayoutSettings {
   dock: boolean
   /** 鼠标滚轮切换分类（页面无需滚动时） */
   wheelSwitch: boolean
+  /** 侧栏分类图标使用彩色底（默认单色白线，与子幽一致） */
+  colorIcons: boolean
 }
 
 export interface SyncSettings {

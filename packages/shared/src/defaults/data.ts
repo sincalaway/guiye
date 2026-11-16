@@ -41,7 +41,7 @@ export function createDefaultSettings(): Settings {
       translate: true,
       translateProvider: 'mymemory',
     },
-    layout: { iconSize: 60, iconRadius: 26, gap: 28, showTitle: true, maxWidth: 1180, sidebar: 'left', dock: true, wheelSwitch: true },
+    layout: { iconSize: 60, iconRadius: 26, gap: 28, showTitle: true, maxWidth: 1180, sidebar: 'left', dock: true, wheelSwitch: true, colorIcons: false },
     wallpaper: { current: { ...DEFAULT_WALLPAPER }, source: 'fixed', mask: 0.15, blur: 0, custom: [] },
     sync: { enabled: false, supabaseUrl: '', supabaseAnonKey: '' },
   }
