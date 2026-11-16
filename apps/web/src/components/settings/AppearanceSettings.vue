@@ -43,6 +43,7 @@ const THEMES = [
       <input v-model.number="s.layout.maxWidth" type="range" min="640" max="1800" step="20" class="w-full accent-brand-500" />
       <Toggle v-model="s.layout.showTitle" label="显示图标名称" />
       <Toggle v-model="s.layout.dock" label="显示 WebApp Dock 栏" />
+      <Toggle v-model="s.layout.wheelSwitch" label="鼠标滚轮切换分类" />
       <div class="mt-2 grid grid-cols-2 gap-3">
         <div>
           <label class="gy-label">默认打开方式</label>

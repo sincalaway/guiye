@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { onKeyStroke } from '@vueuse/core'
 import { Maximize, Minimize, Plus, Settings, LayoutGrid, Shuffle } from 'lucide-vue-next'
 import WallpaperLayer from '@/components/layout/WallpaperLayer.vue'
@@ -61,6 +61,35 @@ function onDblClick(e: MouseEvent) {
   toggleMinimal()
 }
 
+// 鼠标滚轮翻页：页面本身（或鼠标下的可滚动区域）还能滚动时正常滚动，到头后再滚一下切换分类
+const mainEl = ref<HTMLElement>()
+let wheelAcc = 0
+let wheelLast = 0
+let wheelLockUntil = 0
+function canScroll(el: HTMLElement, dy: number) {
+  if (el.scrollHeight <= el.clientHeight + 1) return false
+  if (!/(auto|scroll)/.test(getComputedStyle(el).overflowY)) return false
+  return dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0
+}
+function onWheel(e: WheelEvent) {
+  if (minimal.value || ui.editMode || !app.settings.layout.wheelSwitch || e.ctrlKey) return
+  if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || app.categories.length < 2) return
+  for (let n = e.target as HTMLElement | null; n && n !== document.body; n = n.parentElement) {
+    if (n.closest('input, textarea, select, [role="dialog"]')) return
+    if (canScroll(n, e.deltaY)) return
+  }
+  e.preventDefault()
+  const now = Date.now()
+  if (now - wheelLast > 250) wheelAcc = 0
+  wheelLast = now
+  if (now < wheelLockUntil) return
+  wheelAcc += e.deltaMode === 1 ? e.deltaY * 30 : e.deltaY
+  if (Math.abs(wheelAcc) < 50) return
+  if (app.switchCategory(wheelAcc > 0 ? 1 : -1, false)) mainEl.value?.scrollTo({ top: 0 })
+  wheelAcc = 0
+  wheelLockUntil = now + 700
+}
+
 // 全局快捷键
 onKeyStroke((e) => {
   const typing = (e.target as HTMLElement)?.closest?.('input, textarea, [contenteditable="true"]')
@@ -76,7 +105,7 @@ onKeyStroke((e) => {
 <template>
   <WallpaperLayer v-if="wallpaper.session.value" :wallpaper="wallpaper.session.value" :mask="app.settings.wallpaper.mask" :blur="app.settings.wallpaper.blur" :dark="isDark" />
 
-  <div class="relative h-full w-full" @contextmenu.prevent="onPageMenu" @dblclick="onDblClick">
+  <div class="relative h-full w-full" @contextmenu.prevent="onPageMenu" @dblclick="onDblClick" @wheel="onWheel">
     <Sidebar v-if="showSidebar" variant="desktop" />
 
     <!-- 右上角操作 -->
@@ -92,10 +121,22 @@ onKeyStroke((e) => {
       </button>
     </div>
 
-    <main class="scrollbar-thin h-full overflow-y-auto" :class="showSidebar ? 'md:pl-[84px]' : ''">
-      <div class="flex flex-col transition-all duration-500" :class="minimal ? 'min-h-full justify-center pb-[18vh]' : 'pt-[7vh] md:pt-[9vh]'">
+    <!-- 右侧分类页码 -->
+    <div v-if="showSidebar && app.categories.length > 1" class="fixed top-1/2 right-4 z-20 hidden -translate-y-1/2 flex-col gap-2.5 md:flex" @contextmenu.stop.prevent>
+      <button
+        v-for="c in app.categories"
+        :key="c.id"
+        class="h-2 w-2 rounded-full transition-all"
+        :class="c.id === app.data.activeCategoryId ? 'h-5 bg-white' : 'bg-white/40 hover:bg-white/70'"
+        :title="c.name"
+        @click="app.setActiveCategory(c.id)"
+      />
+    </div>
+
+    <main ref="mainEl" class="scrollbar-thin h-full overflow-y-auto" :class="showSidebar ? 'md:pl-[84px]' : ''">
+      <div class="flex flex-col transition-all duration-500" :class="minimal ? 'min-h-full justify-center pb-[18vh]' : 'pt-[6vh] md:pt-[6.5vh]'">
         <div class="mb-6 px-4 md:mb-8"><ClockHeader /></div>
-        <div class="mb-6 px-4 md:mb-10"><SearchBox /></div>
+        <div class="mb-7 px-4 md:mb-12"><SearchBox /></div>
         <template v-if="!minimal">
           <div class="mb-5 md:hidden"><Sidebar variant="mobile" /></div>
           <GridView />

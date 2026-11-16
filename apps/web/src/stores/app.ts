@@ -108,11 +108,16 @@ export const useAppStore = defineStore('app', () => {
     if (data.value.activeCategoryId === id) data.value.activeCategoryId = data.value.categories[Math.max(0, idx - 1)]!.id
     return true
   }
-  function switchCategory(delta: 1 | -1) {
+  /** 切换分类；loop=false 时到头不再循环（滚轮翻页用） */
+  function switchCategory(delta: 1 | -1, loop = true): boolean {
     const list = data.value.categories
     const i = list.findIndex((c) => c.id === data.value.activeCategoryId)
-    const next = list[(i + delta + list.length) % list.length]
-    if (next) data.value.activeCategoryId = next.id
+    const j = i + delta
+    if (!loop && (j < 0 || j >= list.length)) return false
+    const next = list[(j + list.length) % list.length]
+    if (!next || next.id === data.value.activeCategoryId) return false
+    data.value.activeCategoryId = next.id
+    return true
   }
 
   // ---------- 网格项 ----------

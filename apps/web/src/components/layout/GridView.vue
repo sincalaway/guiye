@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useSwipe, useWindowSize } from '@vueuse/core'
 import { Plus } from 'lucide-vue-next'
@@ -27,6 +27,13 @@ const vars = computed(() => {
   }
 })
 
+// 翻页动画方向：切到后面的分类向上滑入，切到前面的向下滑入
+const pageTransition = ref('page-up')
+watch(
+  () => app.categories.findIndex((c) => c.id === app.activeCategory.id),
+  (i, old) => (pageTransition.value = old === undefined || i >= old ? 'page-up' : 'page-down'),
+)
+
 // 手机端左右滑动切换分类
 const el = ref<HTMLElement>()
 useSwipe(el, {
@@ -41,7 +48,7 @@ useSwipe(el, {
 
 <template>
   <div ref="el" class="mx-auto w-full px-4 md:px-6" :style="vars">
-    <Transition name="fade" mode="out-in">
+    <Transition :name="pageTransition" mode="out-in">
       <VueDraggable
         :key="app.activeCategory.id"
         v-model="app.activeCategory.items"
@@ -50,13 +57,13 @@ useSwipe(el, {
         :delay-on-touch-only="true"
         ghost-class="gy-ghost"
         draggable="[data-id]"
-        class="grid justify-center pb-28"
+        class="grid justify-center pb-10"
         :style="{
           gridTemplateColumns: 'repeat(auto-fill, var(--cell-w))',
           gridAutoRows: 'var(--cell-h)',
           gridAutoFlow: 'dense',
           columnGap: 'var(--grid-gap)',
-          rowGap: 'calc(var(--grid-gap) * 0.7)',
+          rowGap: 'calc(var(--grid-gap) * 0.75)',
         }"
       >
         <GridTile v-for="item in app.activeCategory.items" :key="item.id" :item="item" :mobile="mobile" />

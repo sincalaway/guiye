@@ -34,13 +34,14 @@ body,
 
 /* 毛玻璃面板 */
 @utility glass {
-  background: rgb(255 255 255 / 0.72);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgb(255 255 255 / 0.5);
+  background: rgb(255 255 255 / 0.68);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  border: 1px solid rgb(255 255 255 / 0.55);
+  box-shadow: 0 8px 28px -10px rgb(0 0 0 / 0.35);
   .dark & {
-    background: rgb(24 24 27 / 0.72);
-    border-color: rgb(255 255 255 / 0.08);
+    background: rgb(24 24 27 / 0.6);
+    border-color: rgb(255 255 255 / 0.1);
   }
 }
 
@@ -123,4 +124,24 @@ body,
 .pop-leave-to {
   opacity: 0;
   transform: scale(0.96) translateY(6px);
+}
+
+/* 分类翻页 */
+.page-up-enter-active,
+.page-up-leave-active,
+.page-down-enter-active,
+.page-down-leave-active {
+  transition:
+    opacity 0.28s ease,
+    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.page-up-enter-from,
+.page-down-leave-to {
+  opacity: 0;
+  transform: translateY(48px);
+}
+.page-up-leave-to,
+.page-down-enter-from {
+  opacity: 0;
+  transform: translateY(-48px);
 }

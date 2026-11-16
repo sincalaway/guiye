@@ -139,6 +139,8 @@ export interface LayoutSettings {
   maxWidth: number // 网格最大宽度 px
   sidebar: 'left' | 'hidden'
   dock: boolean
+  /** 鼠标滚轮切换分类（页面无需滚动时） */
+  wheelSwitch: boolean
 }
 
 export interface SyncSettings {

@@ -40,8 +40,8 @@ const dateLine = computed(() => {
   <div v-if="c.show" class="text-center text-white select-none text-shadow">
     <div class="flex items-baseline justify-center gap-2">
       <span v-if="time.suffix" class="text-lg opacity-80">{{ time.suffix }}</span>
-      <span class="text-6xl font-light tracking-tight tabular-nums md:text-7xl">{{ time.main }}</span>
+      <span class="text-6xl font-extralight tracking-tight tabular-nums md:text-[76px] md:leading-none">{{ time.main }}</span>
     </div>
-    <div v-if="dateLine" class="mt-1 text-sm opacity-90 md:text-base">{{ dateLine }}</div>
+    <div v-if="dateLine" class="mt-2 text-sm tracking-wide opacity-85 md:text-[15px]">{{ dateLine }}</div>
   </div>
 </template>

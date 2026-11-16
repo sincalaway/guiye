@@ -38,6 +38,7 @@ export function migrateData(raw: unknown, deviceId?: string): AppData {
       id: String(c.id),
       name: String(c.name ?? '未命名'),
       icon: String(c.icon ?? 'folder'),
+      ...(typeof c.color === 'string' && c.color ? { color: c.color } : {}),
       items: Array.isArray(c.items) ? c.items.filter((i: any) => isObj(i) && i.id && i.type) : [],
     })),
   }

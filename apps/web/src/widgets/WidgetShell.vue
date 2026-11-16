@@ -4,7 +4,7 @@ defineProps<{ title?: string; dense?: boolean }>()
 </script>
 
 <template>
-  <div class="@container glass flex h-full w-full flex-col overflow-hidden rounded-[22px] text-zinc-800 shadow-lg dark:text-zinc-100">
+  <div class="@container glass flex h-full w-full flex-col overflow-hidden rounded-[22px] text-zinc-800 dark:text-zinc-100">
     <div v-if="title || $slots.actions" class="flex shrink-0 items-center justify-between px-3.5 pt-2.5 pb-1">
       <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">{{ title }}</span>
       <div class="flex items-center gap-0.5"><slot name="actions" /></div>
