@@ -1,0 +1,31 @@
+name: Preview (GitHub Pages)
+
+# 推送 main 时构建 Web 版并发布到 gh-pages 分支：https://sincalaway.github.io/guiye/
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter ./apps/web exec vite build
+        env:
+          GUIYE_BASE: ./
+      - run: touch apps/web/dist/.nojekyll
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: apps/web/dist
+          publish_branch: gh-pages

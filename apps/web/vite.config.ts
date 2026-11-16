@@ -32,7 +32,7 @@ function hotDevProxy(): Plugin {
 export default defineConfig(({ mode }) => {
   const isExt = mode === 'extension'
   return {
-    base: isExt ? './' : '/',
+    base: isExt ? './' : (process.env.GUIYE_BASE ?? '/'),
     plugins: [vue(), tailwindcss(), hotDevProxy()],
     resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
     define: { __GUIYE_TARGET__: JSON.stringify(isExt ? 'extension' : 'web') },
