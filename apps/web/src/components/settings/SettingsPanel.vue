@@ -28,11 +28,12 @@ const current = computed(() => TABS.find((t) => t.id === ui.settingsTab) ?? TABS
   <Modal :open="ui.settingsOpen" width="860px" body-class="p-0" @close="ui.settingsOpen = false">
     <template #header><h2 class="text-base font-semibold">设置</h2></template>
     <div class="flex h-[72vh] flex-col sm:flex-row">
-      <nav class="no-scrollbar flex shrink-0 gap-1 overflow-x-auto border-b border-black/5 p-2 sm:w-44 sm:flex-col sm:border-r sm:border-b-0 dark:border-white/5">
+      <!-- 手机端标签换行全部显示（横向滚动时后面的标签看不到） -->
+      <nav class="flex shrink-0 flex-wrap gap-1 border-b border-black/5 p-2 sm:w-44 sm:flex-col sm:flex-nowrap sm:border-r sm:border-b-0 dark:border-white/5">
         <button
           v-for="t in TABS"
           :key="t.id"
-          class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm"
+          class="flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm sm:gap-2 sm:px-3 sm:py-2"
           :class="current.id === t.id ? 'bg-brand-500/10 font-medium text-brand-600 dark:text-brand-400' : 'text-zinc-600 hover:bg-black/5 dark:text-zinc-300 dark:hover:bg-white/5'"
           @click="ui.settingsTab = t.id"
         >
