@@ -68,12 +68,28 @@ export function createDefaultCategories(): Category[] {
     site('GitLab', 'https://gitlab.com', { bgColor: '#fc6d26' }),
     site('Railway', 'https://railway.com', { bgColor: '#13111c' }),
     site('谷歌云', 'https://console.cloud.google.com', { bgColor: '#4285f4' }),
-    site('NodeLoc', 'https://www.nodeloc.com', { bgColor: '#2563eb' }),
   ]
   const ai: GridItem[] = [
     site('Hugging Face', 'https://huggingface.co', { bgColor: '#ff9d00' }),
     site('魔搭社区', 'https://www.modelscope.cn', { bgColor: '#624aff' }),
     site('Civitai', 'https://civitai.com', { bgColor: '#1971c2' }),
+    site('ChatGPT', 'https://chatgpt.com', { bgColor: '#10a37f' }),
+    site('Gemini', 'https://gemini.google.com', { bgColor: '#4e7cf6' }),
+    site('Grok', 'https://grok.com', { bgColor: '#111111' }),
+    site('Hark', 'https://hark.com', { bgColor: '#18181b' }),
+  ]
+  const social: GridItem[] = [
+    site('X', 'https://x.com', { bgColor: '#000000' }),
+    site('Reddit', 'https://www.reddit.com', { bgColor: '#ff4500' }),
+    site('Discord', 'https://discord.com/app', { bgColor: '#5865f2' }),
+    site('NodeLoc', 'https://www.nodeloc.com', { bgColor: '#2563eb' }),
+  ]
+  // 书籍：2x1 卡片，描述写优缺点
+  const books: GridItem[] = [
+    site('Z-Library', 'https://zh.z-library.sk', { size: '2x1', bgColor: '#2d6cdf', description: '优：源最多、更新快、搜索强；缺：易封、需镜像' }),
+    site('WeLib', 'https://zh.welib.org', { size: '2x1', bgColor: '#0ea5e9', description: '优：界面好、资源全、体验佳；缺：镜像稳定性一般' }),
+    site("Anna's Archive", 'https://annas-archive.gl', { size: '2x1', bgColor: '#7c3aed', description: '优：索引最全、永久保存；缺：需跳转下载、界面简陋' }),
+    site('苦瓜书盘', 'https://kgbook.com', { size: '2x1', bgColor: '#16a34a', description: '优：电纸书优化好、无广告；缺：藏书量较小' }),
   ]
   const fun: GridItem[] = [
     site('哔哩哔哩', 'https://www.bilibili.com', { bgColor: '#fb7299' }),
@@ -85,6 +101,8 @@ export function createDefaultCategories(): Category[] {
     { id: 'cat_mail', name: '邮箱', icon: 'mail', items: mail },
     { id: 'cat_dev', name: '开发', icon: 'code', items: dev },
     { id: 'cat_ai', name: 'AI', icon: 'bot', items: ai },
+    { id: 'cat_social', name: '社区', icon: 'users', items: social },
+    { id: 'cat_books', name: '书籍', icon: 'book', items: books },
     { id: 'cat_fun', name: '娱乐', icon: 'gamepad-2', items: fun },
   ]
 }
