@@ -52,33 +52,40 @@ export function createDefaultCategories(): Category[] {
   const home: GridItem[] = [
     widget('clock', '2x2'),
     widget('weather', '2x2', { city: '', lat: null, lon: null }),
-    site('哔哩哔哩', 'https://www.bilibili.com', { bgColor: '#fb7299' }),
-    site('知乎', 'https://www.zhihu.com', { bgColor: '#0066ff' }),
-    site('GitHub', 'https://github.com', { bgColor: '#181717' }),
-    site('微博', 'https://weibo.com', { bgColor: '#e6162d' }),
-    site('淘宝', 'https://www.taobao.com', { bgColor: '#ff5000' }),
-    site('京东', 'https://www.jd.com', { bgColor: '#e1251b' }),
-    site('ChatGPT', 'https://chatgpt.com', { bgColor: '#10a37f' }),
-    site('DeepSeek', 'https://chat.deepseek.com', { bgColor: '#4d6bfe' }),
     widget('hot', '2x4', { source: 'baidu' }),
     widget('poetry', '4x2', { type: 'jinrishici' }),
     widget('calendar', '2x2'),
     widget('notes', '2x2', { noteId: '' }),
   ]
-  const work: GridItem[] = [
-    site('MDN', 'https://developer.mozilla.org'),
-    site('Vue', 'https://vuejs.org', { bgColor: '#42b883' }),
-    site('掘金', 'https://juejin.cn'),
-    site('Stack Overflow', 'https://stackoverflow.com'),
-    site('npm', 'https://www.npmjs.com'),
-    site('Figma', 'https://www.figma.com'),
-    site('飞书', 'https://www.feishu.cn', { openMode: 'webapp' }),
-    site('GitHub', 'https://github.com', { size: '2x1', description: '全球最大的代码托管平台' }),
+  const mail: GridItem[] = [
+    site('Gmail', 'https://mail.google.com', { bgColor: '#ea4335' }),
+    site('Outlook', 'https://outlook.live.com/mail/', { bgColor: '#0078d4' }),
+    site('Proton Mail', 'https://mail.proton.me', { bgColor: '#6d4aff' }),
+  ]
+  const dev: GridItem[] = [
+    site('GitHub', 'https://github.com', { bgColor: '#181717' }),
+    site('Gitee', 'https://gitee.com', { bgColor: '#c71d23' }),
+    site('GitLab', 'https://gitlab.com', { bgColor: '#fc6d26' }),
+    site('Railway', 'https://railway.com', { bgColor: '#13111c' }),
+    site('谷歌云', 'https://console.cloud.google.com', { bgColor: '#4285f4' }),
+    site('NodeLoc', 'https://www.nodeloc.com', { bgColor: '#2563eb' }),
+  ]
+  const ai: GridItem[] = [
+    site('Hugging Face', 'https://huggingface.co', { bgColor: '#ff9d00' }),
+    site('魔搭社区', 'https://www.modelscope.cn', { bgColor: '#624aff' }),
+    site('Civitai', 'https://civitai.com', { bgColor: '#1971c2' }),
+  ]
+  const fun: GridItem[] = [
+    site('哔哩哔哩', 'https://www.bilibili.com', { bgColor: '#fb7299' }),
+    site('YouTube', 'https://www.youtube.com', { bgColor: '#ff0000' }),
+    site('Pixiv', 'https://www.pixiv.net', { bgColor: '#0096fa' }),
   ]
   return [
     { id: 'cat_home', name: '主页', icon: 'house', items: home },
-    { id: 'cat_work', name: '工作', icon: 'briefcase', items: work },
-    { id: 'cat_fun', name: '娱乐', icon: 'gamepad-2', items: [site('YouTube', 'https://www.youtube.com'), site('网易云音乐', 'https://music.163.com'), site('豆瓣', 'https://www.douban.com')] },
+    { id: 'cat_mail', name: '邮箱', icon: 'mail', items: mail },
+    { id: 'cat_dev', name: '开发', icon: 'code', items: dev },
+    { id: 'cat_ai', name: 'AI', icon: 'bot', items: ai },
+    { id: 'cat_fun', name: '娱乐', icon: 'gamepad-2', items: fun },
   ]
 }
 
