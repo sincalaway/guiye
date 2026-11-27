@@ -116,6 +116,10 @@ export interface ClockSettings {
   showDate: boolean
   showWeek: boolean
   showLunar: boolean
+  /** 时辰干支 */
+  showGanzhi: boolean
+  /** 时间日期文字颜色 */
+  color: string
   /** 自定义日期格式，如 "YYYY年M月D日"；留空用默认 */
   dateFormat: string
 }
@@ -127,8 +131,14 @@ export interface SearchSettings {
   suggestions: boolean
   history: boolean
   translate: boolean
-  /** 翻译服务 */
-  translateProvider: 'mymemory' | 'google'
+  /** 翻译服务（volc/baidu：译文由 MyMemory 提供，外链打开对应翻译网站） */
+  translateProvider: 'volc' | 'baidu' | 'mymemory' | 'google'
+  /** 进入程序自动聚焦搜索 */
+  autoFocus: boolean
+  /** 显示搜索框 */
+  show: boolean
+  /** 输入时展示匹配的图标（快捷打开已收藏网站） */
+  iconMatch: boolean
 }
 
 export interface LayoutSettings {
@@ -143,6 +153,28 @@ export interface LayoutSettings {
   wheelSwitch: boolean
   /** 侧栏分类图标使用彩色底（默认单色白线，与子幽一致） */
   colorIcons: boolean
+  /** Dock 栏：关闭 / 联动（与侧栏同色、随侧栏自动隐藏） / 独立 */
+  dockMode: 'off' | 'link' | 'solo'
+  /** Dock 和侧栏背景色（css 颜色，支持 rgba） */
+  barColor: string
+  /** 侧栏自动隐藏（鼠标移到左边缘显示） */
+  sidebarAutoHide: boolean
+  /** 打开时保留上次查看的分类 */
+  rememberCategory: boolean
+  /** 分类首尾循环切换 */
+  loopScroll: boolean
+  /** 个人中心（账户入口）位置 */
+  accountPos: 'left' | 'right'
+  /** 图标名称文字颜色 */
+  titleColor: string
+  /** 图标统一白色背景 */
+  iconBg: boolean
+  /** 图标圆角 px（6~20） */
+  iconRound: number
+  /** 图标最大列数（4~16） */
+  maxCols: number
+  /** 鼠标悬停显示名称提示 */
+  tooltip: boolean
 }
 
 export interface SyncSettings {

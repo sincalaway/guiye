@@ -17,6 +17,7 @@ import FolderDialog from '@/components/dialogs/FolderDialog.vue'
 import CategoryEditor from '@/components/dialogs/CategoryEditor.vue'
 import TrashDialog from '@/components/dialogs/TrashDialog.vue'
 import DockBar from '@/components/layout/DockBar.vue'
+import AccountButton from '@/components/layout/AccountButton.vue'
 import LoginDialog from '@/components/dialogs/LoginDialog.vue'
 import SettingsPanel from '@/components/settings/SettingsPanel.vue'
 import WebAppLayer from '@/components/webapp/WebAppLayer.vue'
@@ -33,6 +34,9 @@ const { isDark } = useTheme()
 const wallpaper = useWallpaper()
 const minimal = computed(() => app.settings.minimal)
 const showSidebar = computed(() => !minimal.value && app.settings.layout.sidebar === 'left')
+/** 侧栏自动隐藏时内容不留出侧栏宽度 */
+const sidebarPad = computed(() => showSidebar.value && !app.settings.layout.sidebarAutoHide)
+const barColor = computed(() => app.settings.layout.barColor || 'rgba(46, 46, 46, 0.4)')
 
 onMounted(() => sync.init())
 
@@ -89,7 +93,7 @@ function onWheel(e: WheelEvent) {
   if (now < wheelLockUntil) return
   wheelAcc += e.deltaMode === 1 ? e.deltaY * 30 : e.deltaY
   if (Math.abs(wheelAcc) < 50) return
-  if (app.switchCategory(wheelAcc > 0 ? 1 : -1, false)) mainEl.value?.scrollTo({ top: 0 })
+  if (app.switchCategory(wheelAcc > 0 ? 1 : -1)) mainEl.value?.scrollTo({ top: 0 })
   wheelAcc = 0
   wheelLockUntil = now + 700
 }
@@ -109,12 +113,13 @@ onKeyStroke((e) => {
 <template>
   <WallpaperLayer v-if="wallpaper.session.value" :wallpaper="wallpaper.session.value" :mask="app.settings.wallpaper.mask" :blur="app.settings.wallpaper.blur" :dark="isDark" />
 
-  <div class="relative h-full w-full" @contextmenu.prevent="onPageMenu" @dblclick="onDblClick" @wheel="onWheel">
+  <div class="relative h-full w-full" :style="{ '--gy-bar': barColor }" @contextmenu.prevent="onPageMenu" @dblclick="onDblClick" @wheel="onWheel">
     <Sidebar v-if="showSidebar" variant="desktop" />
 
     <!-- 右上角操作 -->
     <div class="fixed top-3 right-3 z-30 flex gap-1 text-white" @contextmenu.stop.prevent>
       <template v-if="!minimal">
+        <AccountButton v-if="app.settings.layout.accountPos === 'right'" variant="corner" />
         <button class="rounded-full p-2 opacity-80 transition hover:bg-white/15 hover:opacity-100" title="换一张壁纸" @click="wallpaper.next()"><Shuffle :size="18" /></button>
         <button class="rounded-full p-2 opacity-80 transition hover:bg-white/15 hover:opacity-100" :class="{ 'bg-white/20': ui.editMode }" title="批量编辑 (Alt+E)" @click="ui.setEditMode(!ui.editMode)"><LayoutGrid :size="18" /></button>
         <button class="rounded-full p-2 opacity-80 transition hover:bg-white/15 hover:opacity-100" title="添加" @click="ui.libraryOpen = true"><Plus :size="18" /></button>
@@ -137,10 +142,11 @@ onKeyStroke((e) => {
       />
     </div>
 
-    <main ref="mainEl" class="scrollbar-thin h-full overflow-y-auto" :class="showSidebar ? 'md:pl-[60px]' : ''">
+    <main ref="mainEl" class="scrollbar-thin h-full overflow-y-auto" :class="sidebarPad ? 'md:pl-[60px]' : ''">
       <div class="flex flex-col transition-all duration-500" :class="minimal ? 'min-h-full justify-center pb-[18vh]' : 'pt-[6vh] md:pt-[6.5vh]'">
         <div class="mb-6 px-4 md:mb-8"><ClockHeader /></div>
-        <div class="mb-7 px-4 md:mb-12"><SearchBox /></div>
+        <div v-if="app.settings.search.show" class="mb-7 px-4 md:mb-12"><SearchBox /></div>
+        <div v-else class="mb-4 md:mb-8" />
         <template v-if="!minimal">
           <div class="mb-5 md:hidden"><Sidebar variant="mobile" /></div>
           <GridView />
@@ -150,7 +156,7 @@ onKeyStroke((e) => {
   </div>
 
   <WebAppLayer />
-  <DockBar v-if="!minimal" />
+  <DockBar v-if="!minimal" :style="{ '--gy-bar': barColor }" />
   <BatchBar />
   <ContextMenu />
   <SiteEditor />

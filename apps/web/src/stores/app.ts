@@ -47,6 +47,8 @@ export const useAppStore = defineStore('app', () => {
       data.value = createDefaultData(deviceId)
       await saveData(data.value)
     }
+    // 「保留上次查看的分类」关闭时，每次打开回到第一个分类
+    if (!data.value.settings.layout.rememberCategory && data.value.categories[0]) data.value.activeCategoryId = data.value.categories[0].id
 
     watch(
       () => [data.value.categories, data.value.settings, data.value.notes, data.value.todos, data.value.todoLists, data.value.trash, data.value.dock, data.value.searchHistory, data.value.activeCategoryId],
@@ -116,7 +118,8 @@ export const useAppStore = defineStore('app', () => {
     return true
   }
   /** 切换分类；loop=false 时到头不再循环（滚轮翻页用） */
-  function switchCategory(delta: 1 | -1, loop = true): boolean {
+  /** loop 缺省跟随「页面首尾循环滚动」设置 */
+  function switchCategory(delta: 1 | -1, loop = data.value.settings.layout.loopScroll): boolean {
     const list = data.value.categories
     const i = list.findIndex((c) => c.id === data.value.activeCategoryId)
     const j = i + delta

@@ -20,11 +20,13 @@ const vars = computed(() => {
   const gap = mobile.value ? Math.min(layout.value.gap, 16) : layout.value.gap
   return {
     '--icon-size': `${icon}px`,
-    '--icon-radius': `${layout.value.iconRadius}%`,
+    '--icon-radius': `${layout.value.iconRound}px`,
+    '--title-color': layout.value.titleColor || '#ffffff',
     '--grid-gap': `${gap}px`,
     '--cell-w': `${icon + (mobile.value ? 16 : 24)}px`,
     '--cell-h': `${icon + (layout.value.showTitle ? 26 : 8)}px`,
-    maxWidth: `${layout.value.maxWidth}px`,
+    // 最大列数：列宽 × 列数 + 列距 ×（列数 - 1）+ 左右内边距
+    maxWidth: `${(icon + (mobile.value ? 16 : 24)) * layout.value.maxCols + gap * (layout.value.maxCols - 1) + 48}px`,
   }
 })
 
@@ -48,7 +50,7 @@ useSwipe(el, {
 </script>
 
 <template>
-  <div ref="el" class="mx-auto w-full px-4 md:px-6" :style="vars">
+  <div ref="el" class="mx-auto w-full px-4 md:px-6" :class="{ 'gy-icon-bg': layout.iconBg }" :style="vars">
     <Transition :name="pageTransition" mode="out-in">
       <VueDraggable
         :key="app.activeCategory.id"
@@ -77,7 +79,7 @@ useSwipe(el, {
           >
             <Plus :size="26" />
           </button>
-          <span v-if="layout.showTitle" class="mt-1.5 text-xs text-white/80 text-shadow">添加</span>
+          <span v-if="layout.showTitle" class="mt-1.5 text-xs text-shadow" style="color: var(--title-color)">添加</span>
         </div>
       </VueDraggable>
     </Transition>

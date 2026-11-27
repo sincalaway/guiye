@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { onClickOutside, useDebounceFn, useEventListener } from '@vueuse/core'
 import { Search, Languages, History, X, Settings2, Copy, ExternalLink, ChevronDown } from 'lucide-vue-next'
-import { buildSearchUrl, isProbablyUrl, normalizeUrl, TRANSLATE_SITE_URL, type SearchEngine } from '@guiye/shared'
+import { buildSearchUrl, isProbablyUrl, normalizeUrl, TRANSLATE_SITE_URL, type SearchEngine, type SiteItem } from '@guiye/shared'
+import SiteIcon from '@/components/common/SiteIcon.vue'
+import { useOpenSite } from '@/composables/useSite'
 import { useAppStore } from '@/stores/app'
 import { useUiStore } from '@/stores/ui'
 import { fetchSuggestions, quickTranslate } from '@/services/search'
@@ -13,6 +15,7 @@ const s = computed(() => app.settings.search)
 const engines = computed(() => s.value.engines)
 const engine = computed<SearchEngine>(() => engines.value.find((e) => e.id === s.value.engineId) ?? engines.value[0]!)
 
+const openSite = useOpenSite()
 const q = ref('')
 const focused = ref(false)
 const showEngines = ref(false)
@@ -36,7 +39,21 @@ const rows = computed<{ kind: 'history' | 'suggest'; text: string }[]>(() => {
   if (!q.value.trim()) return s.value.history ? app.data.searchHistory.slice(0, 8).map((text) => ({ kind: 'history' as const, text })) : []
   return s.value.suggestions ? suggestions.value.map((text) => ({ kind: 'suggest' as const, text })) : []
 })
-const dropdownOpen = computed(() => focused.value && !showEngines.value && (rows.value.length > 0 || !!translation.value))
+/** 图标快捷搜索：输入时匹配已收藏的网站（名称 / 网址） */
+const iconHits = computed<SiteItem[]>(() => {
+  const kw = q.value.trim().toLowerCase()
+  if (!s.value.iconMatch || !kw) return []
+  const out: SiteItem[] = []
+  const seen = new Set<string>()
+  for (const c of app.categories)
+    for (const it of c.items)
+      for (const site of it.type === 'site' ? [it] : it.type === 'folder' ? it.children : []) {
+        if (seen.has(site.url) || out.length >= 8) continue
+        if (site.title.toLowerCase().includes(kw) || site.url.toLowerCase().includes(kw)) (seen.add(site.url), out.push(site))
+      }
+  return out
+})
+const dropdownOpen = computed(() => focused.value && !showEngines.value && (rows.value.length > 0 || !!translation.value || iconHits.value.length > 0))
 
 const loadSuggest = useDebounceFn(async (kw: string) => {
   if (!s.value.suggestions || !kw.trim()) return (suggestions.value = [])
@@ -48,7 +65,7 @@ const loadTranslate = useDebounceFn(async (kw: string) => {
   if (!s.value.translate || !kw.trim() || isProbablyUrl(kw)) return (translation.value = null)
   translation.value = { text: '', loading: true }
   try {
-    const text = await quickTranslate(kw, s.value.translateProvider)
+    const text = await quickTranslate(kw, s.value.translateProvider === 'google' ? 'google' : 'mymemory')
     if (kw === q.value) translation.value = { text, loading: false }
   } catch (e: any) {
     if (kw === q.value) translation.value = { text: '', loading: false, error: e?.message ?? '翻译失败' }
@@ -116,9 +133,18 @@ async function copyTranslation() {
   ui.toast('译文已复制', 'success')
 }
 
+const VOLC_TRANSLATE_URL = 'https://translate.volcengine.com/?text=%s'
 function openTranslateSite() {
-  window.open(buildSearchUrl(TRANSLATE_SITE_URL, q.value.trim()), '_blank', 'noopener')
+  window.open(buildSearchUrl(s.value.translateProvider === 'volc' ? VOLC_TRANSLATE_URL : TRANSLATE_SITE_URL, q.value.trim()), '_blank', 'noopener')
 }
+function openHit(site: SiteItem) {
+  app.pushHistory(q.value.trim())
+  openSite(site)
+  q.value = ''
+  focused.value = false
+}
+// 进入程序自动聚焦搜索
+onMounted(() => s.value.autoFocus && setTimeout(() => input.value?.focus(), 60))
 
 // 在页面任意空白处直接打字或按 "/" 时聚焦搜索框
 useEventListener(window, 'keydown', (e: KeyboardEvent) => {
@@ -212,6 +238,18 @@ defineExpose({ focus: () => input.value?.focus() })
           </div>
           <button v-if="translation.text" class="rounded p-1 text-zinc-400 hover:text-zinc-700" title="复制译文" @click="copyTranslation"><Copy :size="14" /></button>
           <button class="rounded p-1 text-zinc-400 hover:text-zinc-700" title="在翻译网站打开" @click="openTranslateSite"><ExternalLink :size="14" /></button>
+        </div>
+        <div v-if="iconHits.length" class="no-scrollbar mx-2 mb-1 flex gap-1 overflow-x-auto pb-1">
+          <button
+            v-for="h in iconHits"
+            :key="h.id"
+            class="flex w-16 shrink-0 flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[11px] hover:bg-black/5 dark:hover:bg-white/10"
+            :title="h.url"
+            @click="openHit(h)"
+          >
+            <span class="h-9 w-9" style="--icon-radius: 10px"><SiteIcon :item="h" :size="36" /></span>
+            <span class="w-full truncate text-center">{{ h.title }}</span>
+          </button>
         </div>
         <div v-if="!q.trim() && rows.length" class="flex items-center justify-between px-4 pt-1 pb-1 text-xs text-zinc-400">
           <span>搜索历史</span>

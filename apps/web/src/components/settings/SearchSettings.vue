@@ -3,7 +3,6 @@ import { computed, reactive } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import { GripVertical, Trash2, Search, Plus, RotateCcw } from 'lucide-vue-next'
 import { BUILTIN_ENGINES, faviconUrl, uid } from '@guiye/shared'
-import Toggle from '@/components/common/Toggle.vue'
 import { useAppStore } from '@/stores/app'
 import { useUiStore } from '@/stores/ui'
 
@@ -63,20 +62,6 @@ function restore() {
         <input v-model="form.name" class="gy-input !w-32" placeholder="名称" />
         <input v-model="form.url" class="gy-input min-w-60 flex-1" placeholder="https://example.com/search?q=%s" @keydown.enter="add" />
         <button class="gy-btn-primary" @click="add"><Plus :size="15" />添加</button>
-      </div>
-    </div>
-    <div>
-      <h3 class="mb-1 text-sm font-semibold">搜索行为</h3>
-      <Toggle v-model="s.openInNewTab" label="在新标签页打开搜索结果" />
-      <Toggle v-model="s.suggestions" label="搜索建议" hint="输入时显示联想词（百度/Google 建议接口）" />
-      <Toggle v-model="s.history" label="记录搜索历史" hint="仅保存在本地，聚焦空搜索框时显示" />
-      <Toggle v-model="s.translate" label="快捷翻译" hint="输入时在下拉框中显示中英互译结果" />
-      <div v-if="s.translate" class="mt-1">
-        <label class="gy-label">翻译服务</label>
-        <select v-model="s.translateProvider" class="gy-input">
-          <option value="mymemory">MyMemory（免费，国内可用，每日有额度）</option>
-          <option value="google">Google（需能访问 Google）</option>
-        </select>
       </div>
     </div>
   </section>

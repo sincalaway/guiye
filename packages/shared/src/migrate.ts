@@ -46,6 +46,17 @@ export function migrateData(raw: unknown, deviceId?: string): AppData {
       items: Array.isArray(c.items) ? c.items.filter((i: any) => isObj(i) && i.id && i.type) : [],
     })),
   }
+  // 旧版 layout.dock=false 对应 Dock 关闭；数值类设置收敛到子幽的取值范围
+  const L = data.settings.layout
+  const rawLayout = isObj(src.settings) && isObj(src.settings.layout) ? src.settings.layout : {}
+  if (rawLayout.dockMode === undefined && rawLayout.dock === false) L.dockMode = 'off'
+  const clamp = (v: unknown, lo: number, hi: number, d: number) => (typeof v === 'number' && Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d)
+  L.iconSize = clamp(L.iconSize, 60, 80, 60)
+  L.iconRound = clamp(L.iconRound, 6, 20, 12)
+  L.gap = clamp(L.gap, 25, 40, 33)
+  L.maxCols = clamp(L.maxCols, 4, 16, 14)
+  data.settings.wallpaper.blur = clamp(data.settings.wallpaper.blur, 0, 20, 0)
+  data.settings.wallpaper.mask = clamp(data.settings.wallpaper.mask, 0, 1, 0.1)
   if (!data.categories.length) data.categories = base.categories
   if (!data.categories.some((c) => c.id === data.activeCategoryId)) data.activeCategoryId = data.categories[0]!.id
   if (!data.settings.search.engines.some((e) => e.id === data.settings.search.engineId)) {

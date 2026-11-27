@@ -148,7 +148,17 @@ body,
 
 /* 左侧通栏：深色半透明 + 毛玻璃，色调随壁纸 */
 @utility gy-sidebar {
-  background: rgb(0 0 0 / 0.38);
+  background: var(--gy-bar, rgb(46 46 46 / 0.4));
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
 }
+
+/* 图标背景（主题标签 → 图标背景）：图片图标统一白底圆角 */
+.gy-icon-bg .gy-img-icon {
+  background: #fff;
+  border-radius: var(--icon-radius, 12px);
+  padding: 14%;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+}
+.gy-icon-bg .gy-img-icon img { filter: none; }

@@ -59,7 +59,7 @@ function submit() {
 }
 function openConfig() {
   ui.loginOpen = false
-  ui.openSettings('account')
+  ui.openSettings('sync')
 }
 </script>
 

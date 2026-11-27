@@ -16,6 +16,9 @@ const app = useAppStore()
 const ui = useUiStore()
 const openSite = useOpenSite()
 const failed = ref(new Set<string>())
+const mode = computed(() => app.settings.layout.dockMode ?? 'link')
+/** 联动：侧栏自动隐藏且未展开时，Dock 一起隐藏 */
+const hideWithSidebar = computed(() => app.settings.layout.sidebarAutoHide && !ui.sidebarPeek)
 const trashCount = computed(() => app.data.trash.length)
 const topId = computed(() => [...ui.windows].sort((a, b) => b.z - a.z).find((w) => w.state !== 'min')?.id)
 
@@ -46,8 +49,9 @@ function winMenu(e: MouseEvent, w: (typeof ui.windows)[number]) {
 <template>
   <Transition name="pop">
     <div
-      v-if="app.settings.layout.dock && !ui.editMode"
+      v-if="mode !== 'off' && !ui.editMode && !(mode === 'link' && hideWithSidebar)"
       class="gy-dock fixed bottom-3 left-1/2 z-[800] flex -translate-x-1/2 items-center gap-3 rounded-[22px] px-3 py-2.5"
+      :class="{ 'gy-dock-link': mode === 'link' }"
       @contextmenu.stop.prevent
     >
       <VueDraggable v-model="app.data.dock" :animation="160" class="flex items-center gap-3">
@@ -83,6 +87,9 @@ function winMenu(e: MouseEvent, w: (typeof ui.windows)[number]) {
   backdrop-filter: blur(18px) saturate(1.4);
   -webkit-backdrop-filter: blur(18px) saturate(1.4);
   box-shadow: 0 10px 30px rgb(0 0 0 / 0.25), inset 0 0 0 1px rgb(255 255 255 / 0.12);
+}
+.gy-dock-link {
+  background: var(--gy-bar, rgb(46 46 46 / 0.4));
 }
 .gy-dock-item { transition: transform 0.18s ease; }
 .gy-dock-item:hover { transform: translateY(-4px) scale(1.06); }

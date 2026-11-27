@@ -1,5 +1,5 @@
 /**
- * 数据变动记录：本机保留最近 30 份数据快照，可一键恢复。
+ * 数据变动记录：本机保留最近 10 份数据快照，可一键恢复。
  * - 普通编辑：距上一份超过 10 分钟才记录，避免频繁写入
  * - 整体替换（导入、云端覆盖、恢复默认）：替换前强制记录
  * 只保存在本机 IndexedDB，不参与同步。
@@ -19,7 +19,7 @@ export interface Snapshot {
 
 const store = createStore('guiye-history', 'snapshots')
 const KEY = 'list'
-const MAX = 30
+const MAX = 10
 const MIN_GAP = 10 * 60_000
 
 function count(d: AppData) {
@@ -35,7 +35,7 @@ function count(d: AppData) {
 }
 
 export async function listSnapshots(): Promise<Snapshot[]> {
-  return ((await get(KEY, store)) as Snapshot[] | undefined) ?? []
+  return (((await get(KEY, store)) as Snapshot[] | undefined) ?? []).slice(0, MAX)
 }
 
 export async function recordSnapshot(d: AppData, reason: string, force = false) {

@@ -107,7 +107,7 @@ const COLORS = ['', '#2563eb', '#7c3aed', '#db2777', '#dc2626', '#ea580c', '#ca8
   <Modal :open="ui.siteEditor.open" :title="editing ? '编辑图标' : '添加网站'" width="560px" @close="ui.siteEditor.open = false">
     <div class="flex flex-col gap-4 sm:flex-row">
       <div class="flex shrink-0 flex-col items-center gap-2 sm:w-28">
-        <div class="h-[72px] w-[72px] overflow-hidden shadow-lg" :style="{ borderRadius: `${app.settings.layout.iconRadius}%` }">
+        <div class="h-[72px] w-[72px] overflow-hidden shadow-lg" :style="{ borderRadius: `${app.settings.layout.iconRound}px` }">
           <SiteIcon :item="preview" :size="72" />
         </div>
         <span class="max-w-full truncate text-xs text-zinc-500">{{ preview.title }}</span>

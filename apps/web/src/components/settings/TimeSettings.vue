@@ -1,26 +1,29 @@
 <script setup lang="ts">
+/** 时间日期（子幽：预览 + 显示时间 / 日期字体颜色 / 内容展示 6 项） */
 import { computed } from 'vue'
-import Toggle from '@/components/common/Toggle.vue'
+import ClockHeader from '@/components/layout/ClockHeader.vue'
+import SetSwitch from './parts/SetSwitch.vue'
+import SetColor from './parts/SetColor.vue'
+import SetHeading from './parts/SetHeading.vue'
 import { useAppStore } from '@/stores/app'
 
 const app = useAppStore()
-const s = computed(() => app.settings)
+const c = computed(() => app.settings.clock)
+const h24 = computed({ get: () => !c.value.hour12, set: (v: boolean) => (c.value.hour12 = !v) })
 </script>
 
 <template>
-  <section class="space-y-6">
-    <div>
-      <h3 class="mb-1 text-sm font-semibold">时间日期</h3>
-      <Toggle v-model="s.clock.show" label="显示时间" />
-      <template v-if="s.clock.show">
-        <Toggle v-model="s.clock.hour12" label="12 小时制" />
-        <Toggle v-model="s.clock.showSeconds" label="显示秒" />
-        <Toggle v-model="s.clock.showDate" label="显示日期" />
-        <Toggle v-model="s.clock.showWeek" label="显示星期" />
-        <Toggle v-model="s.clock.showLunar" label="显示农历" />
-        <label class="gy-label mt-2">日期格式（留空为「11月8日」）</label>
-        <input v-model="s.clock.dateFormat" class="gy-input" placeholder="如 YYYY-MM-DD 或 YYYY年M月D日" />
-      </template>
-    </div>
+  <section>
+    <div class="mb-2 rounded-xl bg-zinc-800 px-4 py-6"><ClockHeader preview /></div>
+    <SetSwitch v-model="c.show" label="显示时间" />
+    <SetColor v-model="c.color" label="日期字体颜色" fallback="#ffffff" />
+    <hr class="my-2 border-black/5 dark:border-white/5" />
+    <SetHeading>内容展示</SetHeading>
+    <SetSwitch v-model="c.showDate" label="年月" />
+    <SetSwitch v-model="c.showSeconds" label="秒" />
+    <SetSwitch v-model="h24" label="24小时制" />
+    <SetSwitch v-model="c.showWeek" label="周" />
+    <SetSwitch v-model="c.showLunar" label="农历" />
+    <SetSwitch v-model="c.showGanzhi" label="干支" />
   </section>
 </template>

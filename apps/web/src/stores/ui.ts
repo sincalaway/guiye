@@ -31,6 +31,8 @@ export const useUiStore = defineStore('ui', () => {
   const libraryOpen = ref(false)
   const trashOpen = ref(false)
   const loginOpen = ref(false)
+  /** 侧栏自动隐藏时是否正在显示 */
+  const sidebarPeek = ref(false)
   const libraryTab = ref<'sites' | 'widgets' | 'custom'>('sites')
 
   /** 编辑网站弹窗：null 关闭；item 为空表示新建 */
@@ -120,6 +122,7 @@ export const useUiStore = defineStore('ui', () => {
   }
 
   return {
+    sidebarPeek,
     trashOpen,
     loginOpen,
     settingsOpen,

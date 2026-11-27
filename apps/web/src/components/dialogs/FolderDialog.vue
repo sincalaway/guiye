@@ -31,7 +31,7 @@ function saveTitle() {
     <template #header>
       <input v-model="title" class="w-full bg-transparent text-base font-semibold outline-none" @blur="saveTitle" @keydown.enter="($event.target as HTMLInputElement).blur()" />
     </template>
-    <div v-if="folder" :style="{ '--icon-size': '56px', '--icon-radius': `${app.settings.layout.iconRadius}%` }">
+    <div v-if="folder" :style="{ '--icon-size': '56px', '--icon-radius': `${app.settings.layout.iconRound}px` }">
       <VueDraggable v-model="folder.children" :animation="180" ghost-class="gy-ghost" class="grid grid-cols-4 gap-x-3 gap-y-4 sm:grid-cols-5">
         <GridTile v-for="c in folder.children" :key="c.id" :item="c" :mobile="false" in-folder />
       </VueDraggable>

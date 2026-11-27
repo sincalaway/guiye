@@ -18,6 +18,7 @@ const layout = computed(() => app.settings.layout)
 const size = computed(() => parseSize(props.item.size))
 const selected = computed(() => ui.selected.has(props.item.id))
 const isCard = computed(() => props.item.type === 'site' && size.value.cols >= 2)
+const tip = computed(() => (layout.value.tooltip && !ui.editMode ? (props.item.type === 'widget' ? undefined : props.item.title) : undefined))
 const def = computed(() => (props.item.type === 'widget' ? widgetDef(props.item.widget) : undefined))
 
 const gridStyle = computed(() => {
@@ -51,7 +52,7 @@ function onMiddle(e: MouseEvent) {
 </script>
 
 <template>
-  <div class="group relative min-w-0" :style="gridStyle" :data-id="item.id" @contextmenu.prevent.stop="menu($event, item, inFolder)">
+  <div class="group relative min-w-0" :style="gridStyle" :data-id="item.id" :title="tip" @contextmenu.prevent.stop="menu($event, item, inFolder)">
     <div class="h-full w-full" :class="{ 'gy-jiggle': ui.editMode && !inFolder }">
       <!-- 组件卡片 -->
       <div v-if="item.type === 'widget'" class="flex h-full w-full flex-col" :class="{ 'pointer-events-none': ui.editMode }" @click="ui.editMode && onClick($event)">
@@ -60,7 +61,7 @@ function onMiddle(e: MouseEvent) {
           <div v-else class="glass flex h-full items-center justify-center rounded-[22px] text-xs text-zinc-500">未知组件：{{ item.widget }}</div>
         </div>
         <!-- 卡片下方标题（子幽样式） -->
-        <span v-if="layout.showTitle && !inFolder" class="text-shadow mt-1.5 shrink-0 truncate text-center text-xs text-white">{{ (item.config.title as string) || def?.name }}</span>
+        <span v-if="layout.showTitle && !inFolder" class="text-shadow mt-1.5 shrink-0 truncate text-center text-xs" style="color: var(--title-color, #fff)">{{ (item.config.title as string) || def?.name }}</span>
       </div>
 
       <!-- 网站卡片 (2x1 / 2x2) -->
@@ -81,7 +82,7 @@ function onMiddle(e: MouseEvent) {
           <div class="text-xs text-zinc-500 dark:text-zinc-400" :class="size.rows >= 2 ? 'line-clamp-3' : 'truncate'">{{ item.description || hostnameOf(item.url) }}</div>
         </div>
       </a>
-      <span v-if="layout.showTitle" class="text-shadow mt-1.5 shrink-0 truncate text-center text-xs text-white">{{ item.title }}</span>
+      <span v-if="layout.showTitle" class="text-shadow mt-1.5 shrink-0 truncate text-center text-xs" style="color: var(--title-color, #fff)">{{ item.title }}</span>
       </div>
 
       <!-- 网站图标 / 文件夹 (1x1) -->
@@ -107,7 +108,8 @@ function onMiddle(e: MouseEvent) {
         <span
           v-if="layout.showTitle"
           class="mt-1.5 w-full truncate px-0.5 text-center text-xs"
-          :class="inFolder ? 'text-zinc-700 dark:text-zinc-200' : 'text-white text-shadow'"
+          :class="inFolder ? 'text-zinc-700 dark:text-zinc-200' : 'text-shadow'"
+          :style="inFolder ? undefined : { color: 'var(--title-color, #fff)' }"
         >
           {{ item.title }}
         </span>

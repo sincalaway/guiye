@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
 import { computed } from 'vue'
-import { Plus, Settings, RefreshCw, CloudOff, ArrowLeftRight } from 'lucide-vue-next'
+import { Plus, Settings, ArrowLeftRight } from 'lucide-vue-next'
+import AccountButton from './AccountButton.vue'
 import type { Category } from '@guiye/shared'
 import { useAppStore } from '@/stores/app'
 import { useUiStore } from '@/stores/ui'
-import { useSyncStore } from '@/stores/sync'
 import { categoryIcon, categoryColor } from '@/utils/categoryIcons'
 
 defineProps<{ variant: 'desktop' | 'mobile' }>()
 const app = useAppStore()
 const ui = useUiStore()
-const sync = useSyncStore()
 
 function onCategoryMenu(e: MouseEvent, c: Category) {
   ui.openMenu(e, [
@@ -32,31 +31,24 @@ function onCategoryMenu(e: MouseEvent, c: Category) {
 function addCategory() {
   Object.assign(ui.categoryEditor, { open: true, id: null })
 }
-const logoUrl = `${import.meta.env.BASE_URL}logo-light.png`
-const colorIcons = computed(() => app.settings.layout.colorIcons)
-const signedIn = computed(() => sync.status === 'idle' || sync.status === 'syncing' || (sync.status === 'error' && !!sync.email))
-const accountLabel = computed(() => (signedIn.value ? sync.nickname || '已登录' : '登录'))
-const avatarText = computed(() => (sync.nickname || sync.email || '?').slice(0, 1).toUpperCase())
+const layout = computed(() => app.settings.layout)
+const colorIcons = computed(() => layout.value.colorIcons)
 </script>
 
 <template>
   <!-- 桌面：左侧通栏（贴边、全高、半透明深色毛玻璃，参照子幽） -->
-  <aside v-if="variant === 'desktop'" class="gy-sidebar fixed inset-y-0 left-0 z-30 hidden w-[60px] flex-col text-white md:flex" @contextmenu.stop.prevent>
-    <!-- 账户：未登录显示 logo + 登录，已登录显示头像 -->
-    <button
-      class="flex shrink-0 flex-col items-center gap-1 pt-7 pb-4 transition hover:bg-white/10"
-      :title="signedIn ? `已登录：${sync.provider === 'qq' ? 'QQ ' + sync.nickname : sync.email}（点击管理同步）` : '登录以同步数据'"
-      @click="signedIn ? ui.openSettings('account') : (ui.loginOpen = true)"
-    >
-      <span class="relative flex h-8 w-8 items-center justify-center">
-        <img v-if="!signedIn" :src="logoUrl" alt="归页" class="h-8 w-8" draggable="false" />
-        <img v-else-if="sync.avatarUrl" :src="sync.avatarUrl" alt="" class="h-8 w-8 rounded-full object-cover" referrerpolicy="no-referrer" draggable="false" />
-        <span v-else class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-sm font-semibold text-zinc-700">{{ avatarText }}</span>
-        <RefreshCw v-if="sync.status === 'syncing'" :size="11" class="absolute -right-1 -bottom-1 animate-spin rounded-full bg-black/50 p-px" />
-        <CloudOff v-else-if="sync.status === 'error'" :size="11" class="absolute -right-1 -bottom-1 rounded-full bg-black/50 p-px text-amber-300" />
-      </span>
-      <span class="w-full truncate px-1 text-center text-xs leading-tight">{{ accountLabel }}</span>
-    </button>
+  <!-- 自动隐藏：鼠标移到左边缘时滑出 -->
+  <div v-if="variant === 'desktop' && layout.sidebarAutoHide" class="fixed inset-y-0 left-0 z-30 hidden w-2 md:block" @mouseenter="ui.sidebarPeek = true" />
+  <aside
+    v-if="variant === 'desktop'"
+    class="gy-sidebar fixed inset-y-0 left-0 z-30 hidden w-[60px] flex-col text-white transition-transform duration-300 md:flex"
+    :class="layout.sidebarAutoHide && !ui.sidebarPeek ? '-translate-x-full' : ''"
+    @mouseleave="layout.sidebarAutoHide && (ui.sidebarPeek = false)"
+    @contextmenu.stop.prevent
+  >
+    <!-- 账户（个人中心位置 = 左侧时） -->
+    <AccountButton v-if="layout.accountPos !== 'right'" variant="sidebar" />
+    <div v-else class="h-6 shrink-0" />
 
     <VueDraggable v-model="app.data.categories" :animation="180" class="no-scrollbar flex w-full min-h-0 flex-col overflow-y-auto" ghost-class="gy-ghost">
       <button

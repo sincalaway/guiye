@@ -4,6 +4,7 @@ import { useNow } from '@vueuse/core'
 import { formatDate, lunarOf } from '@guiye/shared'
 import { useAppStore } from '@/stores/app'
 
+defineProps<{ preview?: boolean }>()
 const app = useAppStore()
 const c = computed(() => app.settings.clock)
 const now = useNow({ interval: 1000 })
@@ -42,18 +43,20 @@ const dateLine = computed(() => {
   if (c.value.showLunar) {
     const l = lunarOf(d)
     if (l) parts.push(`${l.month}${l.day}`)
-    parts.push(hourGanZhi(d))
   }
+  if (c.value.showGanzhi ?? true) parts.push(hourGanZhi(d))
   return parts.join('  ')
 })
 </script>
 
 <template>
-  <div v-if="c.show" class="text-center text-white select-none text-shadow">
+  <div v-if="c.show || dateLine || preview" class="text-center select-none text-shadow" :style="{ color: c.color || '#ffffff' }">
+    <template v-if="c.show">
     <div class="flex items-baseline justify-center gap-2">
       <span v-if="time.suffix" class="text-lg opacity-80">{{ time.suffix }}</span>
-      <span class="text-6xl font-light tracking-tight tabular-nums md:text-[64px] md:leading-none">{{ time.main }}</span>
+      <span class="font-light tracking-tight tabular-nums" :class="preview ? 'text-5xl leading-none' : 'text-6xl md:text-[64px] md:leading-none'">{{ time.main }}</span>
     </div>
+    </template>
     <div v-if="dateLine" class="mt-2 text-sm tracking-[0.12em] opacity-90 md:text-[15px]">{{ dateLine }}</div>
   </div>
 </template>
