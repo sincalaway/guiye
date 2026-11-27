@@ -6,18 +6,6 @@ import type { HotEntry, HotSource } from './types'
  * 返回格式与 DailyHotApi 兼容：{ code: 200, data: HotEntry[] }
  */
 export const HOT_SOURCES: Record<HotSource, { name: string; upstream: string; normalize: (json: any) => HotEntry[] }> = {
-  weibo: {
-    name: '微博热搜',
-    upstream: 'https://weibo.com/ajax/side/hotSearch',
-    normalize: (json) =>
-      (json?.data?.realtime ?? [])
-        .filter((x: any) => !x.is_ad)
-        .map((x: any) => ({
-          title: x.word ?? x.note,
-          url: `https://s.weibo.com/weibo?q=${encodeURIComponent('#' + (x.word ?? x.note) + '#')}`,
-          hot: x.num,
-        })),
-  },
   baidu: {
     name: '百度热搜',
     upstream: 'https://top.baidu.com/api/board?platform=wise&tab=realtime',
@@ -33,6 +21,28 @@ export const HOT_SOURCES: Record<HotSource, { name: string; upstream: string; no
         }))
     },
   },
+  weibo: {
+    name: '微博热搜',
+    upstream: 'https://weibo.com/ajax/side/hotSearch',
+    normalize: (json) =>
+      (json?.data?.realtime ?? [])
+        .filter((x: any) => !x.is_ad)
+        .map((x: any) => ({
+          title: x.word ?? x.note,
+          url: `https://s.weibo.com/weibo?q=${encodeURIComponent('#' + (x.word ?? x.note) + '#')}`,
+          hot: x.num,
+        })),
+  },
+  bilibili: {
+    name: '哔哩哔哩热搜',
+    upstream: 'https://s.search.bilibili.com/main/hotword?limit=50',
+    normalize: (json) =>
+      (json?.list ?? []).map((x: any) => ({
+        title: x.show_name || x.keyword,
+        url: `https://search.bilibili.com/all?keyword=${encodeURIComponent(x.keyword ?? x.show_name)}`,
+        hot: x.heat_score,
+      })),
+  },
   zhihu: {
     name: '知乎热榜',
     upstream: 'https://api.zhihu.com/topstory/hot-lists/total?limit=50',
@@ -46,6 +56,26 @@ export const HOT_SOURCES: Record<HotSource, { name: string; upstream: string; no
           hot: x.detail_text ?? t.metrics_area?.text,
         }
       }),
+  },
+  douyin: {
+    name: '抖音热榜',
+    upstream: 'https://www.iesdouyin.com/web/api/v2/hotsearch/billboard/word/',
+    normalize: (json) =>
+      (json?.word_list ?? []).map((x: any) => ({
+        title: x.word,
+        url: `https://www.douyin.com/search/${encodeURIComponent(x.word)}`,
+        hot: x.hot_value,
+      })),
+  },
+  toutiao: {
+    name: '头条热榜',
+    upstream: 'https://www.toutiao.com/hot-event/hot-board/?origin=toutiao_pc',
+    normalize: (json) =>
+      (json?.data ?? []).map((x: any) => ({
+        title: x.Title,
+        url: x.Url || `https://so.toutiao.com/search?keyword=${encodeURIComponent(x.Title)}`,
+        hot: x.HotValue,
+      })),
   },
 }
 

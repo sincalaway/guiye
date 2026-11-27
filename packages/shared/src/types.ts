@@ -41,7 +41,7 @@ export interface SiteItem extends BaseItem {
 }
 
 /** 已注册的组件类型；新增卡片只需在 widget 注册表里加一项 */
-export type WidgetKind = 'notes' | 'weather' | 'hot' | 'calendar' | 'poetry' | 'clock' | (string & {})
+export type WidgetKind = 'notes' | 'weather' | 'hot' | 'calendar' | 'poetry' | 'clock' | 'todo' | 'countdown' | 'anniversary' | 'bookmarks' | (string & {})
 
 /** 组件卡片 */
 export interface WidgetItem extends BaseItem {
@@ -175,6 +175,24 @@ export interface Note {
   updatedAt: number
 }
 
+/** 待办事项 */
+export interface Todo {
+  id: string
+  text: string
+  done: boolean
+  createdAt: number
+  /** 所属清单名，空为默认 */
+  list?: string
+}
+
+/** 回收站条目：删除的图标/卡片及其原位置 */
+export interface TrashEntry {
+  item: GridItem
+  categoryId: string
+  categoryName: string
+  deletedAt: number
+}
+
 export interface AppData {
   schemaVersion: number
   /** 最近一次修改时间（毫秒），用于同步冲突判断 */
@@ -185,6 +203,13 @@ export interface AppData {
   activeCategoryId: string
   settings: Settings
   notes: Note[]
+  todos: Todo[]
+  /** 待办清单名 */
+  todoLists: string[]
+  /** 回收站（最近 100 条） */
+  trash: TrashEntry[]
+  /** 底部 Dock 固定的网站 */
+  dock: SiteItem[]
   searchHistory: string[]
 }
 
@@ -195,4 +220,4 @@ export interface HotEntry {
   hot?: number | string
 }
 
-export type HotSource = 'weibo' | 'baidu' | 'zhihu'
+export type HotSource = 'baidu' | 'weibo' | 'bilibili' | 'zhihu' | 'douyin' | 'toutiao'

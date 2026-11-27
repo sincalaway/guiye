@@ -122,6 +122,11 @@ export const SITE_LIBRARY: LibraryGroup[] = [
       { title: 'Notion', url: 'https://www.notion.so', color: '#000000' },
       { title: 'TinyPNG', url: 'https://tinypng.com', color: '#84bb4b' },
       { title: '草料二维码', url: 'https://cli.im', color: '#22b14c' },
+      { title: '局域网传输', url: 'https://pairdrop.net', description: '同一网络下设备间互传文件，无需安装', color: '#4a6cf7' },
+      { title: '在线画板', url: 'https://excalidraw.com', color: '#6965db' },
+      { title: '火山翻译', url: 'https://translate.volcengine.com', color: '#3c6cfe' },
+      { title: '今日热榜', url: 'https://tophub.today', color: '#e74c3c' },
+      { title: 'Linux命令查询', url: 'https://wangchujiang.com/linux-command/', color: '#24292f' },
     ],
   },
   {

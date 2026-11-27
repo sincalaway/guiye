@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { onClickOutside, useDebounceFn, useEventListener } from '@vueuse/core'
-import { Search, Languages, History, X, Settings2, Copy, ExternalLink } from 'lucide-vue-next'
+import { Search, Languages, History, X, Settings2, Copy, ExternalLink, ChevronDown } from 'lucide-vue-next'
 import { buildSearchUrl, isProbablyUrl, normalizeUrl, TRANSLATE_SITE_URL, type SearchEngine } from '@guiye/shared'
 import { useAppStore } from '@/stores/app'
 import { useUiStore } from '@/stores/ui'
@@ -139,7 +139,7 @@ defineExpose({ focus: () => input.value?.focus() })
 <template>
   <div ref="root" class="relative mx-auto w-full max-w-[640px]" @contextmenu.stop>
     <div
-      class="flex h-12 items-center rounded-full pr-2 pl-1.5 shadow-lg transition md:h-[52px]"
+      class="flex h-11 items-center rounded-full pr-2 pl-1.5 shadow-lg transition md:h-[46px]"
       :class="focused ? 'bg-white/95 dark:bg-zinc-900/95' : 'glass-soft hover:bg-white/30'"
     >
       <button
@@ -149,7 +149,7 @@ defineExpose({ focus: () => input.value?.focus() })
       >
         <img v-if="iconOk(engine)" :src="engine.icon" alt="" class="h-5 w-5 rounded" referrerpolicy="no-referrer" @error="markBad(engine.id)" />
         <Search v-else :size="18" :class="focused ? 'text-zinc-500' : 'text-white'" />
-        <span class="hidden text-xs sm:inline" :class="focused ? 'text-zinc-500' : 'text-white/90'">{{ engine.name }}</span>
+        <ChevronDown :size="13" :class="focused ? 'text-zinc-400' : 'text-white/70'" />
       </button>
       <input
         ref="input"

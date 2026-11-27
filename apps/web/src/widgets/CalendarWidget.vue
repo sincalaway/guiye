@@ -3,11 +3,26 @@ import { computed, ref } from 'vue'
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { lunarOf, type WidgetItem } from '@guiye/shared'
 import WidgetShell from './WidgetShell.vue'
+import { dayOfYear, isoWeek } from './dateUtils'
+import CalendarDialog from './CalendarDialog.vue'
 
 const props = defineProps<{ item: WidgetItem; cols: number; rows: number }>()
 const today = new Date()
 const cursor = ref(new Date(today.getFullYear(), today.getMonth(), 1))
 const big = computed(() => props.cols >= 4 && props.rows >= 4)
+/** 2x2 默认显示「今天」（子幽样式），点击切换月历 */
+const monthView = ref(false)
+const dialog = ref(false)
+const todayLunar = lunarOf(today)
+const WEEK = '日一二三四五六'
+const todayInfo = {
+  ym: `${today.getFullYear()}年${today.getMonth() + 1}月`,
+  day: today.getDate(),
+  doy: dayOfYear(today),
+  week: isoWeek(today),
+  lunar: todayLunar ? `${todayLunar.month}${todayLunar.day}` : '',
+  wd: `周${WEEK[today.getDay()]}`,
+}
 
 const cells = computed(() => {
   const y = cursor.value.getFullYear()
@@ -37,10 +52,21 @@ function reset() {
 </script>
 
 <template>
-  <WidgetShell>
+  <WidgetShell v-if="!big && !monthView" dense tone="solid">
+    <button class="flex h-full w-full flex-col text-center" title="打开日历" @click="dialog = true">
+      <div class="w-full shrink-0 bg-[#f5515f] py-1.5 text-[13px] font-medium text-white">{{ todayInfo.ym }}</div>
+      <div class="flex min-h-0 w-full flex-1 flex-col items-center justify-center">
+        <div class="text-[44px] leading-none font-semibold tabular-nums">{{ todayInfo.day }}</div>
+        <div class="mt-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">第{{ todayInfo.doy }}天 第{{ todayInfo.week }}周</div>
+        <div class="text-[11px] text-zinc-500 dark:text-zinc-400">{{ todayInfo.lunar }} {{ todayInfo.wd }}</div>
+      </div>
+    </button>
+  </WidgetShell>
+  <WidgetShell v-else tone="solid">
     <div class="flex h-full flex-col pt-2">
       <div class="mb-1 flex items-center justify-between">
-        <button class="text-sm font-semibold" title="回到今天" @click="reset">{{ cursor.getFullYear() }}年{{ cursor.getMonth() + 1 }}月</button>
+        <button class="text-sm font-semibold" :title="big ? '回到今天' : '返回今天'" @click="big ? reset() : ((monthView = false), reset())">{{ cursor.getFullYear() }}年{{ cursor.getMonth() + 1 }}月</button>
+        <span v-if="big" class="text-xs text-zinc-400">第{{ todayInfo.doy }}天 第{{ todayInfo.week }}周 · {{ todayInfo.lunar }}</span>
         <div class="flex text-zinc-400">
           <button class="rounded p-0.5 hover:text-zinc-700" aria-label="上个月" @click="shift(-1)"><ChevronLeft :size="15" /></button>
           <button class="rounded p-0.5 hover:text-zinc-700" aria-label="下个月" @click="shift(1)"><ChevronRight :size="15" /></button>
@@ -62,4 +88,5 @@ function reset() {
       </div>
     </div>
   </WidgetShell>
+  <CalendarDialog :open="dialog" @close="dialog = false" />
 </template>

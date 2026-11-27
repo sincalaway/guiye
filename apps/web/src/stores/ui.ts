@@ -27,8 +27,10 @@ export interface WebAppWindow {
 /** 纯界面状态（不持久化） */
 export const useUiStore = defineStore('ui', () => {
   const settingsOpen = ref(false)
-  const settingsTab = ref('appearance')
+  const settingsTab = ref('general')
   const libraryOpen = ref(false)
+  const trashOpen = ref(false)
+  const loginOpen = ref(false)
   const libraryTab = ref<'sites' | 'widgets' | 'custom'>('sites')
 
   /** 编辑网站弹窗：null 关闭；item 为空表示新建 */
@@ -112,12 +114,14 @@ export const useUiStore = defineStore('ui', () => {
     Object.assign(siteEditor, { open: true, item, categoryId })
   }
 
-  function openSettings(tab = 'appearance') {
+  function openSettings(tab = 'general') {
     settingsTab.value = tab
     settingsOpen.value = true
   }
 
   return {
+    trashOpen,
+    loginOpen,
     settingsOpen,
     settingsTab,
     openSettings,

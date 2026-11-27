@@ -1,5 +1,5 @@
 import { defineAsyncComponent, type Component } from 'vue'
-import { NotebookPen, CloudSun, Flame, CalendarDays, Feather, Clock } from 'lucide-vue-next'
+import { NotebookPen, CloudSun, Flame, CalendarDays, Feather, Clock, ListTodo, Hourglass, Heart, Bookmark, ImageIcon } from 'lucide-vue-next'
 import type { ItemSize } from '@guiye/shared'
 
 /**
@@ -42,8 +42,8 @@ export const WIDGETS: WidgetDef[] = [
   },
   {
     kind: 'hot',
-    name: '热搜榜',
-    description: '微博 / 百度 / 知乎热搜，一键切换',
+    name: '热搜',
+    description: '百度 / 微博 / 哔站 / 知乎 / 抖音 / 头条热搜，一键切换',
     icon: Flame,
     sizes: ['2x2', '2x4', '4x2', '4x4'],
     defaultSize: '2x4',
@@ -53,7 +53,7 @@ export const WIDGETS: WidgetDef[] = [
   {
     kind: 'calendar',
     name: '日历',
-    description: '月历与农历',
+    description: '今日（第几天、第几周、农历）与月历',
     icon: CalendarDays,
     sizes: ['2x2', '4x4'],
     defaultSize: '2x2',
@@ -79,6 +79,56 @@ export const WIDGETS: WidgetDef[] = [
     defaultSize: '2x2',
     defaultConfig: () => ({}),
     component: defineAsyncComponent(() => import('./ClockWidget.vue')),
+  },
+  {
+    kind: 'todo',
+    name: '待办事项',
+    description: '记录待办，勾选完成，可同步',
+    icon: ListTodo,
+    sizes: ['2x2', '2x4', '4x2', '4x4'],
+    defaultSize: '2x2',
+    defaultConfig: () => ({}),
+    component: defineAsyncComponent(() => import('./TodoWidget.vue')),
+  },
+  {
+    kind: 'countdown',
+    name: '倒计时',
+    description: '距离某一天还有多少天',
+    icon: Hourglass,
+    sizes: ['2x2', '4x2'],
+    defaultSize: '2x2',
+    defaultConfig: () => ({ title: '', date: '' }),
+    component: defineAsyncComponent(() => import('./CountdownWidget.vue')),
+  },
+  {
+    kind: 'anniversary',
+    name: '纪念日',
+    description: '从某一天起已经过了多少天，周年提醒',
+    icon: Heart,
+    sizes: ['2x2', '4x2'],
+    defaultSize: '2x2',
+    defaultConfig: () => ({ title: '', date: '' }),
+    component: defineAsyncComponent(() => import('./AnniversaryWidget.vue')),
+  },
+  {
+    kind: 'bookmarks',
+    name: '书签管理',
+    description: '搜索、打开、删除全部书签；扩展版可读取浏览器书签',
+    icon: Bookmark,
+    sizes: ['1x2', '2x2'],
+    defaultSize: '1x2',
+    defaultConfig: () => ({}),
+    component: defineAsyncComponent(() => import('./BookmarksWidget.vue')),
+  },
+  {
+    kind: 'wallpaper',
+    name: '背景设置',
+    description: '显示当前壁纸，点击更换',
+    icon: ImageIcon,
+    sizes: ['1x2', '2x2'],
+    defaultSize: '1x2',
+    defaultConfig: () => ({}),
+    component: defineAsyncComponent(() => import('./WallpaperCardWidget.vue')),
   },
 ]
 

@@ -10,10 +10,13 @@ import {
   type FolderItem,
   type GridItem,
   type Note,
+  type Todo,
+  type TrashEntry,
   type ParsedFolder,
   type SiteItem,
 } from '@guiye/shared'
 import { broadcastChange, getDeviceId, loadData, onBroadcastChange, saveData } from '@/services/storage'
+import { recordSnapshot } from '@/services/history'
 
 /** 应用主状态：唯一的数据源，所有修改都经过这里，自动持久化 */
 export const useAppStore = defineStore('app', () => {
@@ -46,13 +49,14 @@ export const useAppStore = defineStore('app', () => {
     }
 
     watch(
-      () => [data.value.categories, data.value.settings, data.value.notes, data.value.searchHistory, data.value.activeCategoryId],
+      () => [data.value.categories, data.value.settings, data.value.notes, data.value.todos, data.value.todoLists, data.value.trash, data.value.dock, data.value.searchHistory, data.value.activeCategoryId],
       () => {
         if (!applyingExternal) data.value.updatedAt = Date.now()
         const external = applyingExternal
         clearTimeout(saveTimer)
         saveTimer = setTimeout(async () => {
           await saveData(toRaw(data.value))
+          recordSnapshot(toRaw(data.value), external ? '同步/其他标签页更新' : '编辑').catch(() => {})
           if (!external) {
             broadcastChange(data.value.updatedAt)
             changeListeners.forEach((fn) => fn(data.value))
@@ -73,6 +77,8 @@ export const useAppStore = defineStore('app', () => {
 
   /** 整体替换数据（导入备份 / 云端拉取） */
   function replaceData(next: AppData, external = false) {
+    // 整体替换前留一份记录，便于在「数据变动记录」里找回
+    recordSnapshot(toRaw(data.value), '替换前自动备份', true).catch(() => {})
     applyingExternal = external
     // 同步配置、设备 id 永远保留本机的
     const keepSync = data.value.settings.sync
@@ -104,7 +110,8 @@ export const useAppStore = defineStore('app', () => {
     if (data.value.categories.length <= 1) return false
     const idx = data.value.categories.findIndex((c) => c.id === id)
     if (idx < 0) return false
-    data.value.categories.splice(idx, 1)
+    const [cat] = data.value.categories.splice(idx, 1)
+    toTrash(cat!.items.map((item) => ({ item, categoryId: cat!.id, categoryName: cat!.name })))
     if (data.value.activeCategoryId === id) data.value.activeCategoryId = data.value.categories[Math.max(0, idx - 1)]!.id
     return true
   }
@@ -154,11 +161,75 @@ export const useAppStore = defineStore('app', () => {
     if (loc) Object.assign(loc.item, patch)
   }
 
-  function removeItems(ids: string[]) {
+  /** 从原位置摘下（不进回收站，内部使用） */
+  function detachItems(ids: string[]) {
     for (const id of ids) {
       const loc = locate(id)
       if (loc) loc.list.splice(loc.index, 1)
     }
+  }
+
+  /** 删除：放进回收站，可恢复 */
+  function removeItems(ids: string[]) {
+    const entries: Omit<TrashEntry, 'deletedAt'>[] = []
+    for (const id of ids) {
+      const loc = locate(id)
+      if (!loc) continue
+      entries.push({ item: loc.item, categoryId: loc.category.id, categoryName: loc.folder ? `${loc.category.name} / ${loc.folder.title}` : loc.category.name })
+    }
+    detachItems(ids)
+    toTrash(entries)
+  }
+
+  // ---------- 回收站 ----------
+  const TRASH_MAX = 100
+  function toTrash(entries: Omit<TrashEntry, 'deletedAt'>[]) {
+    if (!entries.length) return
+    const now = Date.now()
+    data.value.trash = [...entries.map((e) => ({ ...e, deletedAt: now })), ...data.value.trash].slice(0, TRASH_MAX)
+  }
+  /** 恢复到原分类（原分类已删除则放到当前分类） */
+  function restoreTrash(index: number) {
+    const [e] = data.value.trash.splice(index, 1)
+    if (!e) return
+    const target = data.value.categories.some((c) => c.id === e.categoryId) ? e.categoryId : data.value.activeCategoryId
+    addItem(e.item, target)
+    return target
+  }
+  function deleteTrash(index: number) {
+    data.value.trash.splice(index, 1)
+  }
+  function emptyTrash() {
+    data.value.trash = []
+  }
+
+  // ---------- Dock ----------
+  function pinToDock(item: SiteItem) {
+    if (data.value.dock.some((d) => d.url === item.url)) return false
+    data.value.dock.push({ ...JSON.parse(JSON.stringify(item)), id: uid('k_'), size: '1x1' })
+    return true
+  }
+  function unpinDock(id: string) {
+    data.value.dock = data.value.dock.filter((d) => d.id !== id)
+  }
+
+  // ---------- 待办 ----------
+  function addTodo(text: string, list?: string): Todo | null {
+    const t = text.trim()
+    if (!t) return null
+    const todo: Todo = { id: uid('t_'), text: t, done: false, createdAt: Date.now(), ...(list ? { list } : {}) }
+    data.value.todos.unshift(todo)
+    return todo
+  }
+  function toggleTodo(id: string) {
+    const t = data.value.todos.find((x) => x.id === id)
+    if (t) t.done = !t.done
+  }
+  function removeTodo(id: string) {
+    data.value.todos = data.value.todos.filter((x) => x.id !== id)
+  }
+  function clearDoneTodos() {
+    data.value.todos = data.value.todos.filter((x) => !x.done)
   }
 
   function moveItems(ids: string[], toCategoryId: string) {
@@ -187,7 +258,7 @@ export const useAppStore = defineStore('app', () => {
       sites.push(loc.item)
     }
     if (!cat || !sites.length) return null
-    removeItems(sites.map((s) => s.id))
+    detachItems(sites.map((s) => s.id))
     const folder: FolderItem = { id: uid('f_'), type: 'folder', title, size: '1x1', createdAt: Date.now(), children: sites }
     cat.items.splice(Math.min(insertAt, cat.items.length), 0, folder)
     return folder
@@ -263,6 +334,15 @@ export const useAppStore = defineStore('app', () => {
     addItem,
     updateItem,
     removeItems,
+    restoreTrash,
+    pinToDock,
+    unpinDock,
+    deleteTrash,
+    emptyTrash,
+    addTodo,
+    toggleTodo,
+    removeTodo,
+    clearDoneTodos,
     moveItems,
     createFolder,
     moveOutOfFolder,

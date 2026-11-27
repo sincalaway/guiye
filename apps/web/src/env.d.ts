@@ -16,3 +16,9 @@ declare module '*.vue' {
   const component: DefineComponent<object, object, any>
   export default component
 }
+
+declare module 'lunar-javascript' {
+  // 只声明用到的 API（6tail/lunar-javascript）
+  export const Solar: { fromYmd(y: number, m: number, d: number): any; fromDate(d: Date): any }
+  export const Lunar: any
+}

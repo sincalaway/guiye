@@ -31,7 +31,7 @@ export function createDefaultSettings(): Settings {
     defaultOpenMode: 'newTab',
     faviconProvider: 'iconhorse',
     hotApiBase: '',
-    clock: { show: true, hour12: false, showSeconds: false, showDate: true, showWeek: true, showLunar: true, dateFormat: '' },
+    clock: { show: true, hour12: false, showSeconds: true, showDate: true, showWeek: true, showLunar: true, dateFormat: '' },
     search: {
       engineId: DEFAULT_ENGINE_ID,
       engines: BUILTIN_ENGINES.map((e) => ({ ...e })),
@@ -50,12 +50,14 @@ export function createDefaultSettings(): Settings {
 /** 首次打开时的默认布局（配置驱动，可修改） */
 export function createDefaultCategories(): Category[] {
   const home: GridItem[] = [
-    widget('clock', '2x2'),
-    widget('weather', '2x2', { city: '', lat: null, lon: null }),
-    widget('hot', '2x4', { source: 'baidu' }),
-    widget('poetry', '4x2', { type: 'jinrishici' }),
-    widget('calendar', '2x2'),
+    // 与子幽首页一致：热搜、天气、书签管理、记事本 / 待办、日历、背景设置
+    widget('hot', '4x2', { source: 'baidu' }),
+    widget('weather', '4x2', { city: '', lat: null, lon: null }),
+    widget('bookmarks', '1x2'),
     widget('notes', '2x2', { noteId: '' }),
+    widget('todo', '2x2'),
+    widget('calendar', '2x2'),
+    widget('wallpaper', '1x2'),
   ]
   const mail: GridItem[] = [
     site('Gmail', 'https://mail.google.com', { bgColor: '#ea4335' }),
@@ -117,6 +119,14 @@ export function createDefaultData(deviceId = uid('d_')): AppData {
     activeCategoryId: categories[0]!.id,
     settings: createDefaultSettings(),
     notes: [],
+    todos: [],
+    todoLists: [],
+    trash: [],
+    dock: [
+      site('Gmail', 'https://mail.google.com', { bgColor: '#ea4335' }),
+      site('GitHub', 'https://github.com', { bgColor: '#181717' }),
+      site('ChatGPT', 'https://chatgpt.com', { bgColor: '#10a37f' }),
+    ],
     searchHistory: [],
   }
 }

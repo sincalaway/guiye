@@ -33,6 +33,10 @@ export function migrateData(raw: unknown, deviceId?: string): AppData {
     deviceId: deviceId ?? src.deviceId ?? base.deviceId,
     settings,
     notes: Array.isArray(src.notes) ? src.notes : [],
+    todos: Array.isArray(src.todos) ? src.todos : [],
+    todoLists: Array.isArray(src.todoLists) ? src.todoLists.filter((x: unknown) => typeof x === 'string') : [],
+    trash: Array.isArray(src.trash) ? src.trash : [],
+    dock: Array.isArray(src.dock) ? src.dock.filter((i: any) => isObj(i) && i.type === 'site') : [],
     searchHistory: Array.isArray(src.searchHistory) ? src.searchHistory : [],
     categories: src.categories.map((c: any) => ({
       id: String(c.id),

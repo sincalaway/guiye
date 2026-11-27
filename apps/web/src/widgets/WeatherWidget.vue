@@ -74,7 +74,7 @@ onMounted(() => load())
 </script>
 
 <template>
-  <WidgetShell>
+  <WidgetShell tone="light">
     <!-- 选择城市 -->
     <div v-if="picking" class="flex h-full flex-col gap-2 pt-3">
       <div class="flex gap-1">

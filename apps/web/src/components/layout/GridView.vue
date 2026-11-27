@@ -58,7 +58,7 @@ useSwipe(el, {
         :delay-on-touch-only="true"
         ghost-class="gy-ghost"
         draggable="[data-id]"
-        class="grid justify-center pb-10"
+        class="grid justify-center pb-28"
         :style="{
           gridTemplateColumns: 'repeat(auto-fill, var(--cell-w))',
           gridAutoRows: 'var(--cell-h)',

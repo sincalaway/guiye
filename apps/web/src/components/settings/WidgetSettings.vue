@@ -34,7 +34,7 @@ async function deleteNote(id: string) {
     <div>
       <h3 class="mb-1 text-sm font-semibold">热搜 API 地址</h3>
       <p class="mb-2 text-xs leading-relaxed text-zinc-500">
-        微博/百度/知乎不允许网页直接跨域请求，需要一个代理。<span v-if="IS_EXTENSION">扩展版可直接请求，留空即可。</span>
+        各热搜源不允许网页直接跨域请求，需要一个代理。<span v-if="IS_EXTENSION">扩展版可直接请求，留空即可。</span>
         <span v-else>开发环境与 Docker 部署已内置 <code>/api/hot</code> 代理，留空即可；纯静态托管时请填写自部署的 hot-proxy（Cloudflare Worker）或兼容 DailyHotApi 的地址。</span>
       </p>
       <input v-model.trim="s.hotApiBase" class="gy-input" placeholder="如 https://hot.example.workers.dev（留空为自动）" />

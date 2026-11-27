@@ -15,6 +15,9 @@ import SiteEditor from '@/components/dialogs/SiteEditor.vue'
 import LibraryDialog from '@/components/dialogs/LibraryDialog.vue'
 import FolderDialog from '@/components/dialogs/FolderDialog.vue'
 import CategoryEditor from '@/components/dialogs/CategoryEditor.vue'
+import TrashDialog from '@/components/dialogs/TrashDialog.vue'
+import DockBar from '@/components/layout/DockBar.vue'
+import LoginDialog from '@/components/dialogs/LoginDialog.vue'
 import SettingsPanel from '@/components/settings/SettingsPanel.vue'
 import WebAppLayer from '@/components/webapp/WebAppLayer.vue'
 import { useAppStore } from '@/stores/app'
@@ -45,6 +48,7 @@ function onPageMenu(e: MouseEvent) {
     { label: '从网站库添加', action: () => ((ui.libraryTab = 'sites'), (ui.libraryOpen = true)) },
     { label: '添加组件', action: () => ((ui.libraryTab = 'widgets'), (ui.libraryOpen = true)) },
     { label: '新建分类', action: () => Object.assign(ui.categoryEditor, { open: true, id: null }) },
+    { label: '回收站', action: () => (ui.trashOpen = true) },
     { label: '-' },
     { label: '换一张壁纸', action: () => wallpaper.next() },
     { label: '壁纸设置', action: () => ui.openSettings('wallpaper') },
@@ -146,12 +150,15 @@ onKeyStroke((e) => {
   </div>
 
   <WebAppLayer />
+  <DockBar v-if="!minimal" />
   <BatchBar />
   <ContextMenu />
   <SiteEditor />
   <LibraryDialog />
   <FolderDialog />
   <CategoryEditor />
+  <TrashDialog />
+  <LoginDialog />
   <SettingsPanel />
   <ConfirmDialog />
   <ToastHost />

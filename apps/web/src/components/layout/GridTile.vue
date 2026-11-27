@@ -54,16 +54,20 @@ function onMiddle(e: MouseEvent) {
   <div class="group relative min-w-0" :style="gridStyle" :data-id="item.id" @contextmenu.prevent.stop="menu($event, item, inFolder)">
     <div class="h-full w-full" :class="{ 'gy-jiggle': ui.editMode && !inFolder }">
       <!-- 组件卡片 -->
-      <div v-if="item.type === 'widget'" class="h-full w-full" :class="{ 'pointer-events-none': ui.editMode }" @click="ui.editMode && onClick($event)">
-        <component :is="def.component" v-if="def" :item="item" :cols="mobile && size.cols >= 4 ? 4 : size.cols" :rows="size.rows" />
-        <div v-else class="glass flex h-full items-center justify-center rounded-[22px] text-xs text-zinc-500">未知组件：{{ item.widget }}</div>
+      <div v-if="item.type === 'widget'" class="flex h-full w-full flex-col" :class="{ 'pointer-events-none': ui.editMode }" @click="ui.editMode && onClick($event)">
+        <div class="min-h-0 flex-1">
+          <component :is="def.component" v-if="def" :item="item" :cols="mobile && size.cols >= 4 ? 4 : size.cols" :rows="size.rows" />
+          <div v-else class="glass flex h-full items-center justify-center rounded-[22px] text-xs text-zinc-500">未知组件：{{ item.widget }}</div>
+        </div>
+        <!-- 卡片下方标题（子幽样式） -->
+        <span v-if="layout.showTitle && !inFolder" class="text-shadow mt-1.5 shrink-0 truncate text-center text-xs text-white">{{ (item.config.title as string) || def?.name }}</span>
       </div>
 
       <!-- 网站卡片 (2x1 / 2x2) -->
+      <div v-else-if="item.type === 'site' && isCard" class="flex h-full w-full flex-col">
       <a
-        v-else-if="item.type === 'site' && isCard"
         :href="item.url"
-        class="glass flex h-full w-full cursor-pointer overflow-hidden rounded-[22px] p-3 text-zinc-800 shadow-lg transition hover:-translate-y-0.5 dark:text-zinc-100"
+        class="glass flex min-h-0 w-full flex-1 cursor-pointer overflow-hidden rounded-[22px] p-3 text-zinc-800 shadow-lg transition hover:-translate-y-0.5 dark:text-zinc-100"
         :class="size.rows >= 2 ? 'flex-col justify-between' : 'items-center gap-3'"
         draggable="false"
         @click="onClick"
@@ -77,6 +81,8 @@ function onMiddle(e: MouseEvent) {
           <div class="text-xs text-zinc-500 dark:text-zinc-400" :class="size.rows >= 2 ? 'line-clamp-3' : 'truncate'">{{ item.description || hostnameOf(item.url) }}</div>
         </div>
       </a>
+      <span v-if="layout.showTitle" class="text-shadow mt-1.5 shrink-0 truncate text-center text-xs text-white">{{ item.title }}</span>
+      </div>
 
       <!-- 网站图标 / 文件夹 (1x1) -->
       <a

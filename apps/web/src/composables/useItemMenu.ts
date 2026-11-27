@@ -42,6 +42,7 @@ export function useItemMenu() {
       { label: '-' },
       { label: '编辑', action: () => ui.editSite(item) },
       { label: '复制链接', action: () => navigator.clipboard.writeText(item.url).then(() => ui.toast('链接已复制', 'success')) },
+      { label: '添加到 Dock', action: () => ui.toast(app.pinToDock(item) ? `已添加「${item.title}」到 Dock` : '已在 Dock 中') },
     ]
     if (inFolder) {
       entries.push({ label: '移出文件夹', action: () => app.moveOutOfFolder(item.id) })

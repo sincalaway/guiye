@@ -13,7 +13,7 @@ onKeyStroke('Escape', () => props.open && emit('close'))
       <div v-if="open" class="fixed inset-0 z-[900] flex items-center justify-center bg-black/30 p-3 backdrop-blur-[2px]" @mousedown.self="emit('close')">
         <Transition name="pop" appear>
           <div
-            class="glass flex max-h-[88vh] w-full flex-col overflow-hidden rounded-2xl text-zinc-800 shadow-2xl dark:text-zinc-100"
+            class="flex max-h-[88vh] w-full flex-col overflow-hidden rounded-xl bg-white text-zinc-800 shadow-2xl dark:bg-zinc-900 dark:text-zinc-100"
             :style="{ maxWidth: width }"
             role="dialog"
             @contextmenu.stop

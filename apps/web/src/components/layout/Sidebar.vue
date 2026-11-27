@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { VueDraggable } from 'vue-draggable-plus'
 import { computed } from 'vue'
-import { Plus, Settings, RefreshCw, CloudOff } from 'lucide-vue-next'
+import { Plus, Settings, RefreshCw, CloudOff, ArrowLeftRight } from 'lucide-vue-next'
 import type { Category } from '@guiye/shared'
 import { useAppStore } from '@/stores/app'
 import { useUiStore } from '@/stores/ui'
@@ -23,7 +23,7 @@ function onCategoryMenu(e: MouseEvent, c: Category) {
       danger: true,
       disabled: app.categories.length <= 1,
       action: async () => {
-        if (await ui.confirm(`删除「${c.name}」及其中 ${c.items.length} 个项目？此操作不可撤销。`)) app.removeCategory(c.id)
+        if (await ui.confirm(`删除「${c.name}」及其中 ${c.items.length} 个项目？其中的图标会进入回收站。`)) app.removeCategory(c.id)
       },
     },
   ])
@@ -46,7 +46,7 @@ const avatarText = computed(() => (sync.nickname || sync.email || '?').slice(0, 
     <button
       class="flex shrink-0 flex-col items-center gap-1 pt-7 pb-4 transition hover:bg-white/10"
       :title="signedIn ? `已登录：${sync.provider === 'qq' ? 'QQ ' + sync.nickname : sync.email}（点击管理同步）` : '登录以同步数据'"
-      @click="ui.openSettings('sync')"
+      @click="signedIn ? ui.openSettings('account') : (ui.loginOpen = true)"
     >
       <span class="relative flex h-8 w-8 items-center justify-center">
         <img v-if="!signedIn" :src="logoUrl" alt="归页" class="h-8 w-8" draggable="false" />
@@ -81,7 +81,8 @@ const avatarText = computed(() => (sync.nickname || sync.email || '?').slice(0, 
     </VueDraggable>
     <button class="flex h-12 w-full shrink-0 items-center justify-center transition hover:bg-white/10" title="新建分类" @click="addCategory"><Plus :size="21" :stroke-width="1.6" /></button>
 
-    <button class="mt-auto flex h-14 w-full shrink-0 items-center justify-center transition hover:bg-white/10" title="设置" @click="ui.openSettings()"><Settings :size="20" :stroke-width="1.6" /></button>
+    <button class="mt-auto flex h-12 w-full shrink-0 items-center justify-center transition hover:bg-white/10" title="局域网传输" @click="ui.openWebApp({ title: '局域网传输', url: 'https://pairdrop.net', iconUrl: '' })"><ArrowLeftRight :size="19" :stroke-width="1.6" /></button>
+    <button class="flex h-14 w-full shrink-0 items-center justify-center transition hover:bg-white/10" title="设置" @click="ui.openSettings()"><Settings :size="20" :stroke-width="1.6" /></button>
   </aside>
 
   <!-- 移动端：顶部横向分类条 -->
