@@ -11,6 +11,10 @@ export const useSyncStore = defineStore('sync', () => {
   const app = useAppStore()
   const userId = ref<string | null>(null)
   const email = ref<string>('')
+  /** 显示用昵称与头像（QQ 登录时来自 QQ 资料，邮箱登录时为邮箱前缀） */
+  const nickname = ref('')
+  const avatarUrl = ref('')
+  const provider = ref<'email' | 'qq'>('email')
   const busy = ref(false)
   const error = ref('')
   // 同步时间只属于本机，不放进 AppData，避免修改它又触发一次同步
@@ -35,22 +39,37 @@ export const useSyncStore = defineStore('sync', () => {
       sb = await svc.getClient(config.value)
       sb.auth.onAuthStateChange((_e, session) => {
         const uid = session?.user.id ?? null
-        email.value = session?.user.email ?? ''
+        setUser(session?.user)
         if (uid !== userId.value) {
           userId.value = uid
           if (uid) startSync()
           else stopSync()
         }
       })
+      const qq = await svc.consumeQqCallback(sb)
+      if (qq && 'error' in qq) error.value = qq.error
       const session = await svc.getSession(sb)
-      if (session) {
+      if (session && session.user.id !== userId.value) {
         userId.value = session.user.id
-        email.value = session.user.email ?? ''
+        setUser(session.user)
         await startSync()
       }
     } catch (e: any) {
       error.value = e?.message ?? String(e)
     }
+  }
+
+  function setUser(u?: { email?: string; user_metadata?: Record<string, any> } | null) {
+    const meta = u?.user_metadata ?? {}
+    provider.value = meta.provider === 'qq' ? 'qq' : 'email'
+    email.value = u?.email ?? ''
+    nickname.value = meta.name || meta.full_name || (provider.value === 'qq' ? 'QQ 用户' : email.value.split('@')[0])
+    avatarUrl.value = meta.avatar_url || ''
+  }
+
+  function qqLogin() {
+    if (!config.value) throw new Error('尚未配置 Supabase')
+    svc.startQqLogin(config.value)
   }
 
   // 配置变化后重新初始化
@@ -149,9 +168,9 @@ export const useSyncStore = defineStore('sync', () => {
     stopSync()
     await svc.signOut(await client())
     userId.value = null
-    email.value = ''
+    setUser(null)
     app.settings.sync.enabled = false
   }
 
-  return { status, email, error, busy, lastSyncedAt, config, init, syncNow, push, pull, signIn, signUp, sendOtp, verifyOtp, signOut }
+  return { status, email, nickname, avatarUrl, provider, qqLogin, error, busy, lastSyncedAt, config, init, syncNow, push, pull, signIn, signUp, sendOtp, verifyOtp, signOut }
 })

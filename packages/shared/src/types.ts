@@ -150,6 +150,8 @@ export interface SyncSettings {
   /** 自定义 Supabase 配置（为空则用构建时环境变量） */
   supabaseUrl: string
   supabaseAnonKey: string
+  /** 显示 QQ 登录（需在 Supabase 部署 supabase/functions/qq-auth） */
+  qqLogin?: boolean
 }
 
 export interface Settings {

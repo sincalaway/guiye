@@ -246,6 +246,24 @@ pnpm zip:ext         # 产物：apps/extension/guiye-extension-v0.1.0.zip
 
 > anon key 是公开密钥，配合 RLS 使用是安全的；**切勿**把 `service_role` key 放进前端。
 
+### QQ 登录（可选）
+
+Supabase 没有内置 QQ 登录，归页用一个 Edge Function（[`supabase/functions/qq-auth`](supabase/functions/qq-auth/index.ts)）桥接：QQ 互联换到 openid → 为它建一个 Supabase 用户 → 签发一次性令牌 → 前端换成正常会话。之后的同步、RLS 与邮箱用户完全一样，侧栏显示 QQ 头像与昵称。
+
+1. 到 [QQ 互联](https://connect.qq.com) 创建「网站应用」，拿到 **APP ID** 与 **APP Key**。网站应用审核需要已备案的域名；审核通过前只有开发者本人和测试 QQ 号能登录。
+2. 「网站回调域」填：`https://<项目ref>.supabase.co/functions/v1/qq-auth`
+3. 部署函数（需安装 [Supabase CLI](https://supabase.com/docs/guides/cli)）：
+   ```bash
+   supabase link --project-ref <项目ref>
+   supabase functions deploy qq-auth --no-verify-jwt
+   supabase secrets set QQ_APP_ID=你的APPID QQ_APP_KEY=你的APPKey \
+     QQ_ALLOWED_REDIRECTS="https://你的归页地址/,chrome-extension://扩展ID/"
+   ```
+   `QQ_ALLOWED_REDIRECTS` 是允许接收登录令牌的页面前缀（逗号分隔），扩展 ID 在 `chrome://extensions` 里查看；Edge 扩展同样是 `chrome-extension://` 开头。
+4. 归页 → 设置 → 同步 → 自定义同步服务，勾选「显示 QQ 登录」（或构建时设 `VITE_QQ_LOGIN=1` 默认显示）。
+
+> QQ 用户在 Supabase 里显示为 `qq_<openid>@qq.guiye.local`（仅作标识，不会发邮件，可用 `QQ_EMAIL_DOMAIN` 修改）。`service_role` key 只在函数内部使用，不会进前端。
+
 **同步策略**：每份数据带 `updatedAt`。登录 / 启动时比较本机与云端，较新的一方覆盖另一方；本机修改后 2 秒防抖推送；同步配置本身（Supabase 地址等）只保存在本机，不会上传。
 
 ---

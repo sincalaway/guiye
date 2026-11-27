@@ -89,6 +89,43 @@ export async function verifyOtp(sb: SupabaseClient, email: string, token: string
   if (error) throw error
 }
 
+/* ---------------- QQ 登录（经 Edge Function qq-auth 桥接） ---------------- */
+
+const QQ_NONCE_KEY = 'guiye:qq-nonce'
+
+/** 当前页面地址（去掉 hash），作为 QQ 登录后的回跳地址 */
+function currentPage() {
+  return location.href.split('#')[0]
+}
+
+/** 跳转到 QQ 授权页 */
+export function startQqLogin(cfg: SyncConfig) {
+  const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('')
+  sessionStorage.setItem(QQ_NONCE_KEY, nonce)
+  const u = new URL(`${cfg.url}/functions/v1/qq-auth`)
+  u.searchParams.set('redirect', currentPage())
+  u.searchParams.set('nonce', nonce)
+  if (matchMedia('(max-width: 767px)').matches) u.searchParams.set('display', 'mobile')
+  location.href = u.toString()
+}
+
+/**
+ * 处理 QQ 登录回跳：地址栏 hash 中带 qq_token_hash 时换成会话。
+ * 返回 null 表示不是 QQ 回跳；否则返回 { ok } 或 { error }。
+ */
+export async function consumeQqCallback(sb: SupabaseClient): Promise<{ ok: true } | { error: string } | null> {
+  const hash = new URLSearchParams(location.hash.slice(1))
+  if (!hash.has('qq_token_hash') && !hash.has('qq_error')) return null
+  // 立即清掉地址栏里的令牌
+  history.replaceState(null, '', currentPage())
+  const expected = sessionStorage.getItem(QQ_NONCE_KEY)
+  sessionStorage.removeItem(QQ_NONCE_KEY)
+  if (!expected || hash.get('qq_nonce') !== expected) return { error: 'QQ 登录校验失败，请在本页重新发起登录' }
+  if (hash.has('qq_error')) return { error: hash.get('qq_error') || 'QQ 登录失败' }
+  const { error } = await sb.auth.verifyOtp({ token_hash: hash.get('qq_token_hash')!, type: (hash.get('qq_type') || 'magiclink') as 'magiclink' })
+  return error ? { error: error.message } : { ok: true }
+}
+
 export async function signOut(sb: SupabaseClient) {
   await sb.auth.signOut()
 }

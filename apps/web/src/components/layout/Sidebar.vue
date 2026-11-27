@@ -35,8 +35,8 @@ function addCategory() {
 const logoUrl = `${import.meta.env.BASE_URL}logo-light.png`
 const colorIcons = computed(() => app.settings.layout.colorIcons)
 const signedIn = computed(() => sync.status === 'idle' || sync.status === 'syncing' || (sync.status === 'error' && !!sync.email))
-const accountLabel = computed(() => (signedIn.value ? (sync.email ?? '').split('@')[0] || '已登录' : '登录'))
-const avatarText = computed(() => (sync.email ?? '?').slice(0, 1).toUpperCase())
+const accountLabel = computed(() => (signedIn.value ? sync.nickname || '已登录' : '登录'))
+const avatarText = computed(() => (sync.nickname || sync.email || '?').slice(0, 1).toUpperCase())
 </script>
 
 <template>
@@ -45,11 +45,12 @@ const avatarText = computed(() => (sync.email ?? '?').slice(0, 1).toUpperCase())
     <!-- 账户：未登录显示 logo + 登录，已登录显示头像 -->
     <button
       class="flex shrink-0 flex-col items-center gap-1 pt-7 pb-4 transition hover:bg-white/10"
-      :title="signedIn ? `已登录：${sync.email}（点击管理同步）` : '登录以同步数据'"
+      :title="signedIn ? `已登录：${sync.provider === 'qq' ? 'QQ ' + sync.nickname : sync.email}（点击管理同步）` : '登录以同步数据'"
       @click="ui.openSettings('sync')"
     >
       <span class="relative flex h-8 w-8 items-center justify-center">
         <img v-if="!signedIn" :src="logoUrl" alt="归页" class="h-8 w-8" draggable="false" />
+        <img v-else-if="sync.avatarUrl" :src="sync.avatarUrl" alt="" class="h-8 w-8 rounded-full object-cover" referrerpolicy="no-referrer" draggable="false" />
         <span v-else class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-sm font-semibold text-zinc-700">{{ avatarText }}</span>
         <RefreshCw v-if="sync.status === 'syncing'" :size="11" class="absolute -right-1 -bottom-1 animate-spin rounded-full bg-black/50 p-px" />
         <CloudOff v-else-if="sync.status === 'error'" :size="11" class="absolute -right-1 -bottom-1 rounded-full bg-black/50 p-px text-amber-300" />

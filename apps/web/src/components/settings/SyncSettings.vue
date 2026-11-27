@@ -19,6 +19,11 @@ const otpSent = ref(false)
 const busy = ref(false)
 const showAdvanced = ref(!sync.config)
 const cfg = ref({ url: s.value.supabaseUrl, key: s.value.supabaseAnonKey })
+const qqEnabled = computed({
+  get: () => s.value.qqLogin ?? import.meta.env.VITE_QQ_LOGIN === '1',
+  set: (v: boolean) => (s.value.qqLogin = v),
+})
+const qqLogin = () => act(async () => sync.qqLogin())
 
 async function act(fn: () => Promise<unknown>, ok?: string) {
   busy.value = true
@@ -80,7 +85,11 @@ const lastText = computed(() => (sync.lastSyncedAt ? new Date(sync.lastSyncedAt)
     <div v-if="sync.status === 'idle' || sync.status === 'syncing' || (sync.status === 'error' && sync.email)" class="space-y-3">
       <div class="flex items-center justify-between rounded-xl border border-black/5 p-3 dark:border-white/5">
         <div>
-          <div class="text-sm font-medium">{{ sync.email }}</div>
+          <div class="flex items-center gap-2 text-sm font-medium">
+            <img v-if="sync.avatarUrl" :src="sync.avatarUrl" alt="" class="h-6 w-6 rounded-full" referrerpolicy="no-referrer" />
+            {{ sync.provider === 'qq' ? sync.nickname : sync.email }}
+            <span v-if="sync.provider === 'qq'" class="rounded bg-sky-500/15 px-1.5 text-xs font-normal text-sky-600 dark:text-sky-300">QQ</span>
+          </div>
           <div class="text-xs text-zinc-500">
             上次同步：{{ lastText }}
             <span v-if="sync.error" class="text-red-500"> · {{ sync.error }}</span>
@@ -97,6 +106,13 @@ const lastText = computed(() => (sync.lastSyncedAt ? new Date(sync.lastSyncedAt)
 
     <!-- 未登录 -->
     <div v-else-if="sync.config" class="space-y-3">
+      <template v-if="qqEnabled">
+        <button class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#12B7F5] px-4 py-2.5 text-sm font-medium text-white transition hover:brightness-105 disabled:opacity-60" :disabled="busy" @click="qqLogin">
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true"><path d="M12.003 2c-3.06 0-5.37 2.4-5.37 5.62 0 .3.02.6.06.9-.9 1.12-2.2 3.05-2.2 4.74 0 .8.3 1.3.6 1.3.3 0 .8-.6 1.2-1.4.3 1.1.9 2.1 1.7 2.9-.9.3-1.9.9-1.9 1.6 0 .9 1.6 1.4 3.6 1.4 1.1 0 2.1-.2 2.8-.5.7.3 1.7.5 2.8.5 2 0 3.6-.5 3.6-1.4 0-.7-1-1.3-1.9-1.6.8-.8 1.4-1.8 1.7-2.9.4.8.9 1.4 1.2 1.4.3 0 .6-.5.6-1.3 0-1.7-1.3-3.62-2.2-4.74.04-.3.06-.6.06-.9C17.373 4.4 15.063 2 12.003 2z"/></svg>
+          QQ 登录
+        </button>
+        <div class="flex items-center gap-3 text-xs text-zinc-400"><span class="h-px flex-1 bg-black/10 dark:bg-white/10" />或使用邮箱<span class="h-px flex-1 bg-black/10 dark:bg-white/10" /></div>
+      </template>
       <div class="flex gap-1">
         <button class="rounded-lg px-3 py-1.5 text-sm" :class="mode === 'password' ? 'bg-black/5 font-medium dark:bg-white/10' : 'text-zinc-500'" @click="mode = 'password'">邮箱 + 密码</button>
         <button class="rounded-lg px-3 py-1.5 text-sm" :class="mode === 'otp' ? 'bg-black/5 font-medium dark:bg-white/10' : 'text-zinc-500'" @click="mode = 'otp'">邮箱验证码</button>
@@ -131,6 +147,11 @@ const lastText = computed(() => (sync.lastSyncedAt ? new Date(sync.lastSyncedAt)
           <button class="gy-btn-primary" @click="saveConfig">保存配置</button>
           <span class="text-xs text-zinc-400">首次使用请在 Supabase SQL Editor 中执行项目中的 supabase/schema.sql</span>
         </div>
+        <label class="flex items-center gap-2 pt-1 text-sm">
+          <input v-model="qqEnabled" type="checkbox" class="accent-brand-500" />
+          显示 QQ 登录
+          <span class="text-xs text-zinc-400">（需先部署 supabase/functions/qq-auth，见 README）</span>
+        </label>
       </div>
     </div>
   </section>
